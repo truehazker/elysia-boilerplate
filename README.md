@@ -113,8 +113,8 @@ The application uses [Envalid](https://github.com/af/envalid) for type-safe envi
 ## API Documentation
 
 Once the server is running, you can access the interactive API documentation at:
-- **Swagger UI**: `http://localhost:3000/swagger`
-- **OpenAPI JSON**: `http://localhost:3000/swagger/json`
+- **Scala UI**: `http://localhost:3000/openapi`
+- **OpenAPI JSON**: `http://localhost:3000/openapi/json`
 
 ## Database Management
 
