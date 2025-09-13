@@ -1,0 +1,8 @@
+[build]
+target = "bun"
+
+[build.entrypoints]
+main = "src/main.ts"
+
+[build.outdir]
+path = "dist"

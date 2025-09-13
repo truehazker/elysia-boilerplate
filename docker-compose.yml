@@ -1,0 +1,37 @@
+services:
+  elysia-boilerplate:
+    build:
+      context: .
+      dockerfile: Dockerfile
+    ports:
+      - 3000:3000
+    environment:
+      NODE_ENV: production
+      LOG_LEVEL: info
+      SERVER_HOSTNAME: 0.0.0.0
+      SERVER_PORT: 3000
+      DATABASE_URL: postgresql://postgres:postgres@postgres:5432/elysia-boilerplate
+    depends_on:
+      postgres:
+        condition: service_healthy
+    restart: unless-stopped
+  
+  postgres:
+    image: postgres:17-alpine
+    ports:
+      - 5432:5432
+    environment:
+      POSTGRES_USER: postgres
+      POSTGRES_PASSWORD: postgres
+      POSTGRES_DB: elysia-boilerplate
+    volumes:
+      - postgres_data:/var/lib/postgresql/data
+    healthcheck:
+      test: ["CMD-SHELL", "pg_isready -U postgres -d elysia-boilerplate"]
+      interval: 10s
+      timeout: 5s
+      retries: 5
+    restart: unless-stopped
+
+volumes:
+  postgres_data:
