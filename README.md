@@ -1,5 +1,13 @@
 # Elysia Boilerplate
 
+[![License: MIT](https://img.shields.io/badge/License-MIT-yellow.svg)](https://opensource.org/licenses/MIT)
+[![Bun](https://img.shields.io/badge/Bun-1.0+-000000?logo=bun&logoColor=white)](https://bun.sh)
+[![Elysia](https://img.shields.io/badge/Elysia-0.8+-00D8FF?logo=typescript&logoColor=white)](https://elysiajs.com)
+[![PostgreSQL](https://img.shields.io/badge/PostgreSQL-316192?logo=postgresql&logoColor=white)](https://www.postgresql.org)
+[![Drizzle ORM](https://img.shields.io/badge/Drizzle%20ORM-0.29+-FF6B6B?logo=typescript&logoColor=white)](https://orm.drizzle.team)
+[![TypeScript](https://img.shields.io/badge/TypeScript-007ACC?logo=typescript&logoColor=white)](https://www.typescriptlang.org)
+[![Docker](https://img.shields.io/badge/Docker-2496ED?logo=docker&logoColor=white)](https://www.docker.com)
+
 A modern, production-ready boilerplate for building APIs with Elysia, Bun runtime, and PostgreSQL.
 
 ## Features
@@ -77,6 +85,34 @@ The server will start at `http://localhost:3000` (or your configured port).
 | `docker-compose up -d` | Start the entire stack with Docker Compose |
 | `docker-compose down` | Stop all Docker services |
 | `docker-compose logs -f` | View logs from all services |
+
+## Testing
+
+This project includes a testing setup using Bun's built-in test runner. Tests are located in the `src/tests/` folder.
+
+### Running Tests
+
+To run all tests:
+```bash
+bun test
+```
+
+To run tests with coverage:
+```bash
+bun test --coverage
+```
+
+### Adding Tests
+
+Add your test files to the `src/tests/` folder. Test files should follow the naming convention `*.test.ts`.
+
+Example test structure:
+```
+src/tests/
+├── users.test.ts          # User module tests
+├── auth.test.ts           # Authentication tests
+└── api.test.ts            # API endpoint tests
+```
 
 ## Project Structure
 
