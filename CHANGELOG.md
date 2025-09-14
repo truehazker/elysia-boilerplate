@@ -7,6 +7,8 @@ and this project adheres to [Semantic Versioning](https://semver.org/spec/v2.0.0
 
 ## [Unreleased]
 
+## [0.1.2] - 2025-09-14
+
 ### Added
 - Added test directory to `bunfig.toml`
 - Added users test file
@@ -14,6 +16,9 @@ and this project adheres to [Semantic Versioning](https://semver.org/spec/v2.0.0
 ### Fixed
 - Fixed `LOG_LEVEL` type in `config.ts`
 - Fixed mistaken comment in `users/index.ts`
+
+### Changed
+- Updated `README.md` with testing information and some badges
 
 ## [0.1.1] - 2025-09-14
 
