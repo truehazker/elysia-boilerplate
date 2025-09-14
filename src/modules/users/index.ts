@@ -33,10 +33,10 @@ export const users = new Elysia({ prefix: '/users' })
     },
     {
       query: UsersModel.getQuery,
-      // response: {
-      //   200: UsersModel.getResponse,
-      //   422: UsersModel.getError,
-      // },
+      response: {
+        200: UsersModel.getResponse,
+        422: UsersModel.getError,
+      },
       detail: {
         summary: 'Get all users',
         description: 'Get all users from the database with name and surname.'
