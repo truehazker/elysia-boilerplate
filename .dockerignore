@@ -1,0 +1,60 @@
+# Ignore files that shouldn't be in the Docker build context
+# Following best practices from Dejan Gegić's optimization guide
+
+# Version control
+.git
+.gitignore
+
+# Dependencies (will be installed in container)
+node_modules
+npm-debug.log*
+yarn-debug.log*
+yarn-error.log*
+
+# Environment and secrets
+.env
+.env.local
+.env.*.local
+*.pem
+
+# Build outputs (except what we explicitly copy)
+build
+dist
+coverage
+
+# IDE and editor files
+.vscode
+.idea
+*.swp
+*.swo
+*~
+
+# OS generated files
+.DS_Store
+.DS_Store?
+._*
+.Spotlight-V100
+.Trashes
+ehthumbs.db
+Thumbs.db
+
+# Documentation
+README.md
+CHANGELOG.md
+LICENSE
+*.md
+
+# Docker files
+Dockerfile*
+docker-compose*.yml
+
+# Test files
+**/*.test.*
+**/*.spec.*
+tests/
+test/
+
+# Logs
+logs
+*.log
+
