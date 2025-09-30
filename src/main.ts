@@ -18,7 +18,7 @@ const app = new Elysia()
     documentation: {
       info: {
         title: "Elysia Boilerplate",
-        version: "0.1.0",
+        version: "0.1.5",
         description: "A simple boilerplate service for Elysia"
       },
       servers: [
