@@ -14,30 +14,25 @@ const app = new Elysia()
   .onError((ctx) => {
     log.error(ctx.error)
   })
-  .onStart(() => {
-    db.$client.connect().then(() => {
-      log.info("Database connected")
-    }).catch((err: Error) => {
-      log.error(err, "Failed to connect to database");
-      process.exit(1);
-    })
-  })
   .use(openapi({
     documentation: {
       info: {
         title: "Elysia Boilerplate",
-        version: "0.0.0",
-        description: "Elysia Boilerplate is a simple boilerplate for Elysia"
+        version: "0.1.0",
+        description: "A simple boilerplate service for Elysia"
       },
-    },
-    references: fromTypes('src/main.ts')
+      servers: [
+        {
+          url: `http://${config.SERVER_HOSTNAME}:${config.SERVER_PORT}`,
+          description: "Local development server",
+        },
+      ],
+    }
   }))
   .use(users)
   .listen(config.SERVER_PORT, ({ development, hostname, port }) => {
     log.info(
-      `🦊 Elysia is running at ${hostname}:${port} ${
-        development ? "🚧 in development mode!🚧" : ""
-      }`,
+      `🦊 Elysia is running at ${hostname}:${port} ${development ? "🚧 in development mode!🚧" : ""}`,
     )
   });
 

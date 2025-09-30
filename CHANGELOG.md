@@ -7,6 +7,12 @@ and this project adheres to [Semantic Versioning](https://semver.org/spec/v2.0.0
 
 ## [Unreleased]
 
+### Changed
+
+- Updated dependencies to the latest version
+- Updated the way we use logger
+- Improved `openapi` documentation
+
 ## [0.1.4] - 2025-09-16
 
 ### Changed

@@ -8,7 +8,7 @@ export const users = new Elysia({ prefix: '/users' })
   .use(log.into())
   .post(
     '/',
-    async ({ body }) => {
+    async ({ log, body }) => {
       const user = await UsersService.create(body)
       log.info(`Created user ${user.name}`)
       return user;
