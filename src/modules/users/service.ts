@@ -1,5 +1,5 @@
-import db from "@/db";
-import { users } from "@/db/schema/users";
+import db from "../../db";
+import { users } from "../../db/schema/users";
 import { status } from "elysia";
 import type { UsersModel } from "./model";
 import { count } from "drizzle-orm";

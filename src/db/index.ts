@@ -1,6 +1,6 @@
 // Make sure to install the 'pg' package 
 import { drizzle } from 'drizzle-orm/node-postgres';
-import config from '@/modules/common/config';
+import config from '../common/config';
 
 const db = drizzle({
   connection: {
