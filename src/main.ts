@@ -1,12 +1,13 @@
 import { Elysia } from "elysia";
-import { log } from "@/modules/common/logger";
-import config from "./modules/common/config";
+import { log } from "./common/logger";
+import config from "./common/config";
 import openapi from "@elysiajs/openapi";
 import { users } from "./modules/users";
-import { fromTypes } from "@elysiajs/openapi/gen";
 import db from "./db";
+import cors from "@elysiajs/cors";
 
 const app = new Elysia()
+  .use(cors())
   .use(log.into({
     useLevel: config.LOG_LEVEL,
     autoLogging: false,

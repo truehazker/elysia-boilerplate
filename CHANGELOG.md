@@ -7,6 +7,18 @@ and this project adheres to [Semantic Versioning](https://semver.org/spec/v2.0.0
 
 ## [Unreleased]
 
+## [0.1.6] - 2025-11-11
+
+### Changed
+- Dependencies updated to the latest version
+- Fixed the way we define models
+- Moved database-related files to `src/db`
+- Moved common files to `src/common`
+- Removed aliases from `tsconfig.json` as it may interfere with monorepo setups
+
+### Added
+- Added `timestamp` prefix to migrations
+
 ## [0.1.5] - 2025-09-30
 
 ### Changed

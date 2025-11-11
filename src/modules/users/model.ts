@@ -1,5 +1,5 @@
 import Elysia, { t } from "elysia";
-import { userCreate, userSelect, userUpdate } from "@/db/schema/users";
+import { userCreate, userSelect } from "../../db/schema/users";
 
 export namespace UsersModel {
   // Create user
@@ -28,3 +28,13 @@ export namespace UsersModel {
   export const getError = t.Literal('Failed to get users')
   export type getError = typeof getError.static
 }
+
+export const usersModelPlugin = new Elysia()
+  .model({
+    'users.createRequest': UsersModel.createRequest,
+    'users.createResponse': UsersModel.createResponse,
+    'users.createError': UsersModel.createError,
+    'users.getQuery': UsersModel.getQuery,
+    'users.getResponse': UsersModel.getResponse,
+    'users.getError': UsersModel.getError,
+  })
