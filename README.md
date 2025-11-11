@@ -59,7 +59,7 @@ A modern, production-ready boilerplate for building APIs with Elysia, Bun runtim
 
 5. **Run database migrations**
    ```bash
-   bun run migration:apply
+   bun run db:migrate
    ```
 
 ## Development
@@ -78,9 +78,9 @@ The server will start at `http://localhost:3000` (or your configured port).
 | `bun run dev` | Start development server with hot reload |
 | `bun run start` | Start production server |
 | `bun run build` | Build the application for production |
-| `bun run migration:generate` | Generate a new database migration |
-| `bun run migration:apply` | Apply pending migrations to the database |
-| `bun run migration:studio` | Open Drizzle Studio for database management |
+| `bun run db:generate` | Generate a new database migration |
+| `bun run db:migrate` | Apply pending migrations to the database |
+| `bun run db:studio` | Open Drizzle Studio for database management |
 | `docker-compose up -d` | Start the entire stack with Docker Compose |
 | `docker-compose down` | Stop all Docker services |
 | `docker-compose logs -f` | View logs from all services |
@@ -118,12 +118,13 @@ src/tests/
 ```
 src/
 ├── db/                   # Database configuration and schema
+│   ├── migrations/       # Database migrations
 │   ├── index.ts          # Database connection setup
 │   └── schema/           # Drizzle schema definitions
+├── common/               # Shared utilities
+│   ├── config.ts         # Environment configuration
+│   └── logger.ts         # Logger setup
 ├── modules/              # Feature modules
-│   ├── common/           # Shared utilities
-│   │   ├── config.ts     # Environment configuration
-│   │   └── logger.ts     # Logger setup
 │   └── users/            # User module example
 │       ├── index.ts      # Route definitions
 │       ├── model.ts      # Data models
@@ -133,7 +134,7 @@ src/
 
 ## Configuration
 
-The application uses [Envalid](https://github.com/af/envalid) for type-safe environment variable validation. All configuration is centralized in `src/modules/common/config.ts`.
+The application uses [Envalid](https://github.com/af/envalid) for type-safe environment variable validation. All configuration is centralized in `src/common/config.ts`.
 
 ### Environment Variables
 
@@ -155,17 +156,17 @@ Once the server is running, you can access the interactive API documentation at:
 
 ### Generate a new migration
 ```bash
-bun run migration:generate
+bun run db:generate
 ```
 
 ### Apply migrations
 ```bash
-bun run migration:apply
+bun run db:migrate
 ```
 
 ### Open Drizzle Studio
 ```bash
-bun run migration:studio
+bun run db:studio
 ```
 
 ## Docker Deployment

@@ -1,23 +1,25 @@
 import { Elysia } from 'elysia'
 
-import { UsersService } from '@/modules/users/service'
-import { log } from '@/modules/common/logger'
-import { UsersModel } from '@/modules/users/model'
+import { UsersService } from './service'
+import { log } from '../../common/logger'
+import { UsersModel, usersModelPlugin } from './model'
 
-export const users = new Elysia({ prefix: '/users' })
+
+export const users = new Elysia({ prefix: '/users', tags: ['Users'] })
   .use(log.into())
+  .use(usersModelPlugin)
   .post(
     '/',
-    async ({ log, body }) => {
+    async ({ log, body }): Promise<UsersModel.createResponse> => {
       const user = await UsersService.create(body)
       log.info(`Created user ${user.name}`)
       return user;
     },
     {
-      body: UsersModel.createRequest,
+      body: 'users.createRequest',
       response: {
-        200: UsersModel.createResponse,
-        422: UsersModel.createError,
+        200: 'users.createResponse',
+        422: 'users.createError',
       },
       detail: {
         summary: 'Create a new user',
@@ -32,10 +34,10 @@ export const users = new Elysia({ prefix: '/users' })
       return users;
     },
     {
-      query: UsersModel.getQuery,
+      query: 'users.getQuery',
       response: {
-        200: UsersModel.getResponse,
-        422: UsersModel.getError,
+        200: 'users.getResponse',
+        422: 'users.getError',
       },
       detail: {
         summary: 'Get all users',
