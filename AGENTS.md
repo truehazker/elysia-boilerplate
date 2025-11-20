@@ -36,7 +36,6 @@ It follows a modular architecture with strict TypeScript configuration.
 - **Linter**: Strictly follow Biome rules. Run `bun run lint:fix` to auto-fix issues.
 - **TypeScript**: Strict mode is enabled. No `any` types unless absolutely necessary.
 - **Architecture**:
-- **Architecture**:
   - Modular structure in `src/modules/`.
   - Each module should have `index.ts` (routes), `service.ts` (logic), `model.ts` (data).
   - Shared utilities in `src/common/`.
