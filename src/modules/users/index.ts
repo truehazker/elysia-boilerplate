@@ -1,9 +1,7 @@
-import { Elysia } from 'elysia'
-
-import { UsersService } from './service'
-import { log } from '../../common/logger'
-import { UsersModel, usersModelPlugin } from './model'
-
+import { Elysia } from 'elysia';
+import { log } from '../../common/logger';
+import { type UsersModel, usersModelPlugin } from './model';
+import { UsersService } from './service';
 
 export const users = new Elysia({ prefix: '/users', tags: ['Users'] })
   .use(log.into())
@@ -11,8 +9,8 @@ export const users = new Elysia({ prefix: '/users', tags: ['Users'] })
   .post(
     '/',
     async ({ log, body }): Promise<UsersModel.createResponse> => {
-      const user = await UsersService.create(body)
-      log.info(`Created user ${user.name}`)
+      const user = await UsersService.create(body);
+      log.info(`Created user ${user.name}`);
       return user;
     },
     {
@@ -23,14 +21,14 @@ export const users = new Elysia({ prefix: '/users', tags: ['Users'] })
       },
       detail: {
         summary: 'Create a new user',
-        description: 'Create a new user in the database with name and surname.'
-      }
-    }
+        description: 'Create a new user in the database with name and surname.',
+      },
+    },
   )
   .get(
     '/',
     async ({ query }): Promise<UsersModel.getResponse> => {
-      const users = await UsersService.get(query)
+      const users = await UsersService.get(query);
       return users;
     },
     {
@@ -41,7 +39,7 @@ export const users = new Elysia({ prefix: '/users', tags: ['Users'] })
       },
       detail: {
         summary: 'Get all users',
-        description: 'Get all users from the database with name and surname.'
-      }
-    }
-  )
+        description: 'Get all users from the database with name and surname.',
+      },
+    },
+  );

@@ -1,0 +1,7 @@
+{
+  "recommendations": [
+    "biomejs.biome",
+    "ms-vscode.cmake-tools",
+    "vivaxy.vscode-conventional-commits"
+  ]
+}
