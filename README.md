@@ -6,7 +6,7 @@
 [![Drizzle](https://img.shields.io/badge/Drizzle-C5F74F?logo=drizzle&logoColor=000)](https://orm.drizzle.team)
 [![TypeScript](https://img.shields.io/badge/TypeScript-007ACC?logo=typescript&logoColor=white)](https://www.typescriptlang.org)
 [![Docker](https://img.shields.io/badge/Docker-2496ED?logo=docker&logoColor=white)](https://www.docker.com)
-[![Tests](https://github.com/truehazker/elysia-boilerplate/actions/workflows/test.yml/badge.svg)](https://github.com/truehazker/elysia-boilerplate/actions/workflows/tests.yml)
+[![Tests](https://github.com/truehazker/elysia-boilerplate/actions/workflows/tests.yml/badge.svg)](https://github.com/truehazker/elysia-boilerplate/actions/workflows/tests.yml)
 [![Lint](https://github.com/truehazker/elysia-boilerplate/actions/workflows/lint.yml/badge.svg)](https://github.com/truehazker/elysia-boilerplate/actions/workflows/lint.yml)
 
 A modern, production-ready boilerplate for building APIs with Elysia, Bun runtime, and PostgreSQL.
