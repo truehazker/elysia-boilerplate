@@ -9,11 +9,20 @@ and this project adheres to [Semantic Versioning](https://semver.org/spec/v2.0.0
 
 ### Added
 
-- Added `biome` for linting and formatting
+- Added local MCP server configuration
+- Added CI lint workflow
+- Added Biome-based formatting/linting
+- Added VS Code recommendations/settings included
+- Added project guidelines and updated changelog
+
+### Fixed
+
+- Improved user-creation error handling with clearer 422 responses and more robust failure checks
 
 ### Changed
 
 - Updated dependencies to the latest version
+- Updated tests for consistent formatting and interaction patterns
 
 ## [0.1.6] - 2025-11-11
 
