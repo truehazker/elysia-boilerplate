@@ -241,6 +241,12 @@ docker run -d --name elysia-app \
    ./build/server
    ```
 
+## Using Agents
+
+This repository features an `AGENTS.md` file that outlines the recommended tools and commands for using agents.
+
+You can use cursor, claude, etc. to use agents
+
 ## Contributing
 
 1. Fork the repository
