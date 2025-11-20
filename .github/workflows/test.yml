@@ -10,6 +10,7 @@ jobs:
   test:
     name: Run Tests
     runs-on: ubuntu-latest
+    environment: test
 
     steps:
       - name: Checkout code
@@ -25,3 +26,5 @@ jobs:
 
       - name: Run tests
         run: bun test
+        env:
+          NODE_ENV: test
