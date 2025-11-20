@@ -4,7 +4,7 @@ import config from './config';
 export const log = createPinoLogger({
   level: config.LOG_LEVEL,
   transport:
-    config.NODE_ENV !== 'production'
+    config.NODE_ENV === 'development'
       ? {
           targets: [
             {

@@ -15,6 +15,16 @@ It follows a modular architecture with strict TypeScript configuration.
 - **Testing**: Bun Test
 - **Containerization**: Docker
 
+## Recommended Tools
+
+- **VS Code Extensions**:
+  - `biomejs.biome` (Formatter & Linter)
+  - `vivaxy.vscode-conventional-commits` (Commit messages)
+  - `ms-vscode.cmake-tools` (Build tools)
+- **MCP Services**:
+  - PostgreSQL MCP (for database context)
+  - GitHub MCP (for PR/Issue context)
+
 ## Setup & Commands
 
 - **Install dependencies**: `bun install`
@@ -54,7 +64,9 @@ It follows a modular architecture with strict TypeScript configuration.
 ## PR Instructions
 
 - **Branches**: Target `develop` for features, `main` for releases.
-- **Checks**: Ensure `bun run lint` and `bun test` pass before requesting review.
+- **Checks**:
+  - Ensure `bun run lint` and `bun test` pass locally before requesting review.
+  - **CI/CD**: A GitHub Action workflow ("Lint") automatically runs `bun run lint` on every Push and PR to `main` and `develop`. This check must pass for merging.
 - **Title**: Follow conventional commits (e.g., `feat: add user module`, `fix: resolve login bug`).
 
 ## Directory Structure
