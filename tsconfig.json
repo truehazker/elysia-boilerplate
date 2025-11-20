@@ -27,7 +27,7 @@
     "noPropertyAccessFromIndexSignature": false,
 
     // Paths
-    "baseUrl": ".",
+    "baseUrl": "."
   },
 
   "include": ["src/**/*"],
