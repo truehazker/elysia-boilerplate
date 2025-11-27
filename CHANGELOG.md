@@ -5,6 +5,15 @@ All notable changes to this project will be documented in this file.
 The format is based on [Keep a Changelog](https://keepachangelog.com/en/1.1.0/),
 and this project adheres to [Semantic Versioning](https://semver.org/spec/v2.0.0.html).
 
+## [Unreleased]
+
+### Changed
+
+- Updated logger integration to use plugin-based approach at root app level
+- Improved app initialization and launch process with proper signal handling (SIGINT/SIGTERM)
+- Enhanced error logging with structured HTTP request context
+- Improved error handling in the users module
+
 ## [0.2.4] - 2025-11-20
 
 ### Fixed

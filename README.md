@@ -134,6 +134,20 @@ src/
 └── main.ts               # Application entry point
 ```
 
+### Important Notes on Logger Usage
+
+The logger is initialized in the root application (`src/main.ts`) using `.use(log.into({...}))`. To avoid duplicate logs, submodules should import and use the logger directly from `src/common/logger` rather than relying on Elysia's context. Using the logger from context in submodules will result in duplicate log entries.
+
+**Example:**
+
+```typescript
+// ✅ Correct: Import logger directly
+import { log } from 'src/common/logger';
+
+// ❌ Incorrect: Using logger from Elysia context in submodules
+// This will cause duplicate logs
+```
+
 ## Configuration
 
 The application uses [Envalid](https://github.com/af/envalid) for type-safe environment variable validation. All configuration is centralized in `src/common/config.ts`.

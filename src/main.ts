@@ -14,8 +14,22 @@ const app = new Elysia()
       autoLogging: false,
     }),
   )
-  .onError((ctx) => {
-    log.error(ctx.error);
+  .onError(({ code, error, request }) => {
+    log.error(
+      {
+        code,
+        err: error,
+        http: request
+          ? {
+              method: request.method,
+              url: request.url,
+              referrer: request.headers.get('referer') ?? undefined,
+            }
+          : undefined,
+      },
+      'Unhandled request error',
+    );
+    return error;
   })
   .use(
     openapi({
@@ -34,12 +48,13 @@ const app = new Elysia()
       },
     }),
   )
-  .use(users)
-  .listen(config.SERVER_PORT, ({ development, hostname, port }) => {
-    log.info(
-      `🦊 Elysia is running at ${hostname}:${port} ${development ? '🚧 in development mode!🚧' : ''}`,
-    );
-  });
+  .use(users);
+
+app.listen(config.SERVER_PORT, ({ development, hostname, port }) => {
+  log.info(
+    `🦊 Elysia is running at ${hostname}:${port} ${development ? '🚧 in development mode!🚧' : ''}`,
+  );
+});
 
 process.once('SIGINT', () => {
   log.info('SIGINT received, shutting down...');
