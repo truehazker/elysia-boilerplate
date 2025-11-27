@@ -1,6 +1,15 @@
 {
   "name": "elysia-boilerplate",
-  "version": "0.2.4",
+  "version": "0.3.0",
+  "description": "A modern, production-ready boilerplate for building APIs with Elysia, Bun runtime, and PostgreSQL.",
+  "author": "Truehazker",
+  "license": "MIT",
+  "repository": {
+    "type": "git",
+    "url": "https://github.com/truehazker/elysia-boilerplate"
+  },
+  "homepage": "https://github.com/truehazker/elysia-boilerplate",
+  "bugs": "https://github.com/truehazker/elysia-boilerplate/issues",
   "scripts": {
     "start": "bun run src/main.ts",
     "dev": "bun run --watch src/main.ts",
