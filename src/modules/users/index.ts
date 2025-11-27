@@ -1,17 +1,22 @@
-import { Elysia } from 'elysia';
-import { log } from '../../common/logger';
+import { Elysia, status } from 'elysia';
+import { log } from 'src/common/logger';
 import { type UsersModel, usersModelPlugin } from './model';
 import { UsersService } from './service';
 
 export const users = new Elysia({ prefix: '/users', tags: ['Users'] })
-  .use(log.into())
   .use(usersModelPlugin)
   .post(
     '/',
-    async ({ log, body }): Promise<UsersModel.createResponse> => {
-      const user = await UsersService.create(body);
-      log.info(`Created user ${user.name}`);
-      return user;
+    async ({ body }): Promise<UsersModel.createResponse> => {
+      try {
+        const user = await UsersService.create(body);
+        log.info(`Created user ${user.name}`);
+        return user;
+      } catch {
+        throw status(422, {
+          message: 'Failed to create user' satisfies UsersModel.createError,
+        });
+      }
     },
     {
       body: 'users.createRequest',
@@ -28,8 +33,15 @@ export const users = new Elysia({ prefix: '/users', tags: ['Users'] })
   .get(
     '/',
     async ({ query }): Promise<UsersModel.getResponse> => {
-      const users = await UsersService.get(query);
-      return users;
+      try {
+        const users = await UsersService.get(query);
+        log.info(`Got users ${users.total}`);
+        return users;
+      } catch {
+        throw status(422, {
+          message: 'Failed to get users' satisfies UsersModel.getError,
+        });
+      }
     },
     {
       query: 'users.getQuery',
