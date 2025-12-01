@@ -3,8 +3,8 @@ import openapi from '@elysiajs/openapi';
 import { Elysia } from 'elysia';
 import config from './common/config';
 import { log } from './common/logger';
-import db from './db';
 import { users } from './modules/users';
+import { gracefulShutdown } from './util/graceful-shutdown';
 
 const app = new Elysia()
   .use(cors())
@@ -56,28 +56,7 @@ app.listen(config.SERVER_PORT, ({ development, hostname, port }) => {
   );
 });
 
-process.once('SIGINT', async () => {
-  log.info('SIGINT received, shutting down...');
-  try {
-    await app.stop();
-    await db.$client.end();
-  } catch (error) {
-    log.error(error, 'Error shutting SIGINT shutdown');
-    process.exit(1);
-  } finally {
-    process.exit(0);
-  }
-});
+export type App = typeof app;
 
-process.once('SIGTERM', async () => {
-  log.info('SIGTERM received, shutting down...');
-  try {
-    await app.stop();
-    await db.$client.end();
-  } catch (error) {
-    log.error(error, 'Error shutting SIGTERM shutdown');
-    process.exit(1);
-  } finally {
-    process.exit(0);
-  }
-});
+process.once('SIGINT', () => gracefulShutdown(app, 'SIGINT'));
+process.once('SIGTERM', () => gracefulShutdown(app, 'SIGTERM'));
