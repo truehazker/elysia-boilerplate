@@ -58,14 +58,26 @@ app.listen(config.SERVER_PORT, ({ development, hostname, port }) => {
 
 process.once('SIGINT', async () => {
   log.info('SIGINT received, shutting down...');
-  await app.stop();
-  await db.$client.end();
-  process.exit(0);
+  try {
+    await app.stop();
+    await db.$client.end();
+  } catch (error) {
+    log.error(error, 'Error shutting SIGINT shutdown');
+    process.exit(1);
+  } finally {
+    process.exit(0);
+  }
 });
 
 process.once('SIGTERM', async () => {
   log.info('SIGTERM received, shutting down...');
-  await app.stop();
-  await db.$client.end();
-  process.exit(0);
+  try {
+    await app.stop();
+    await db.$client.end();
+  } catch (error) {
+    log.error(error, 'Error shutting SIGTERM shutdown');
+    process.exit(1);
+  } finally {
+    process.exit(0);
+  }
 });
