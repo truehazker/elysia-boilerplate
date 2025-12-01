@@ -56,16 +56,16 @@ app.listen(config.SERVER_PORT, ({ development, hostname, port }) => {
   );
 });
 
-process.once('SIGINT', () => {
+process.once('SIGINT', async () => {
   log.info('SIGINT received, shutting down...');
-  app.stop();
-  db.$client.end();
+  await app.stop();
+  await db.$client.end();
   process.exit(0);
 });
 
-process.once('SIGTERM', () => {
+process.once('SIGTERM', async () => {
   log.info('SIGTERM received, shutting down...');
-  app.stop();
-  db.$client.end();
+  await app.stop();
+  await db.$client.end();
   process.exit(0);
 });
