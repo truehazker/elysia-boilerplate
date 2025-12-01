@@ -2,10 +2,19 @@ import { log } from 'src/common/logger';
 import db from 'src/db';
 import type { App } from 'src/main';
 
+let isShuttingDown = false;
+
 export async function gracefulShutdown(
   app: App,
-  signal: string,
+  signal: NodeJS.Signals,
 ): Promise<void> {
+  if (isShuttingDown) {
+    log.warn('Already shutting down, ignoring signal');
+    return;
+  }
+
+  isShuttingDown = true;
+
   log.info(`${signal} received, shutting down...`);
 
   const shutdownTimeout = setTimeout(() => {
