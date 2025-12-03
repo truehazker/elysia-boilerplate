@@ -14,7 +14,7 @@ const app = new Elysia()
       autoLogging: false,
     }),
   )
-  .onError(({ code, error, request, body }) => {
+  .onError(({ code, error, request }) => {
     // Return Elysia's handled errors as-is
     if (error instanceof ElysiaCustomStatusResponse || code !== 'UNKNOWN') {
       return error;
@@ -30,7 +30,6 @@ const app = new Elysia()
               method: request.method,
               url: request.url,
               referrer: request.headers.get('referer') ?? undefined,
-              body: body,
             }
           : undefined,
       },
