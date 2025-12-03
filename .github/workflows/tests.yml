@@ -14,7 +14,6 @@ jobs:
   test:
     name: Run Tests
     runs-on: ubuntu-latest
-    environment: test
 
     steps:
       - name: Checkout code
