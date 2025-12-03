@@ -1,6 +1,6 @@
 import cors from '@elysiajs/cors';
 import openapi from '@elysiajs/openapi';
-import { Elysia } from 'elysia';
+import { Elysia, ElysiaCustomStatusResponse, status } from 'elysia';
 import config from './common/config';
 import { log } from './common/logger';
 import { users } from './modules/users';
@@ -14,7 +14,13 @@ const app = new Elysia()
       autoLogging: false,
     }),
   )
-  .onError(({ code, error, request }) => {
+  .onError(({ code, error, request, body }) => {
+    // Return Elysia's handled errors as-is
+    if (error instanceof ElysiaCustomStatusResponse || code !== 'UNKNOWN') {
+      return error;
+    }
+
+    // Log unhandled errors
     log.error(
       {
         code,
@@ -24,12 +30,15 @@ const app = new Elysia()
               method: request.method,
               url: request.url,
               referrer: request.headers.get('referer') ?? undefined,
+              body: body,
             }
           : undefined,
       },
-      'Unhandled request error',
+      'Unhandled error',
     );
-    return error;
+
+    // Do not expose unhandled errors to the client
+    return status(500, 'Internal Server Error');
   })
   .use(
     openapi({
