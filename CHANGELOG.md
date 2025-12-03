@@ -7,6 +7,18 @@ and this project adheres to [Semantic Versioning](https://semver.org/spec/v2.0.0
 
 ## [Unreleased]
 
+## [0.4.0] - 2025-12-03
+
+### Changed
+
+- Updated dependencies to the latest version
+- Updated error handling to be more robust
+- Updated ci workflows to use action environment variables instead of test environment
+
+### Fixed
+
+- Fixed error logging to not expose sensitive request information
+
 ## [0.3.1] - 2025-12-01
 
 ### Changed
