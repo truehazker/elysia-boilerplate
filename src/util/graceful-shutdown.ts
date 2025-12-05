@@ -1,6 +1,8 @@
-import { log } from 'src/common/logger';
+import { log as logger } from 'src/common/logger';
 import db from 'src/db';
 import type { App } from 'src/main';
+
+const log = logger.child({ name: 'graceful-shutdown' });
 
 let isShuttingDown = false;
 

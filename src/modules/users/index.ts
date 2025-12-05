@@ -1,7 +1,9 @@
 import { Elysia, status } from 'elysia';
-import { log } from 'src/common/logger';
+import { log as logger } from 'src/common/logger';
 import { type UsersModel, usersModelPlugin } from './model';
 import { UsersService } from './service';
+
+const log = logger.child({ name: 'users' });
 
 export const users = new Elysia({ prefix: '/users', tags: ['Users'] })
   .use(usersModelPlugin)
