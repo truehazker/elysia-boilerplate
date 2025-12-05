@@ -19,8 +19,13 @@ const db = drizzle({
  */
 export async function migrateDb(): Promise<void> {
   log.info('Running database migrations...');
-  await migrate(db, { migrationsFolder: 'src/db/migrations' });
-  log.info('Database migrations completed successfully');
+  try {
+    await migrate(db, { migrationsFolder: 'src/db/migrations' });
+    log.info('Database migrations completed successfully');
+  } catch (error) {
+    log.error({ error }, 'Database migration failed');
+    throw error;
+  }
 }
 
 export default db;
