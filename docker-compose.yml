@@ -12,11 +12,11 @@ services:
       SERVER_PORT: 3000
       DATABASE_URL: postgresql://postgres:postgres@postgres:5432/elysia-boilerplate
     depends_on:
-      postgres:
+      elysia-boilerplate-postgres:
         condition: service_healthy
     restart: unless-stopped
-  
-  postgres:
+
+  elysia-boilerplate-postgres:
     image: postgres:17-alpine
     ports:
       - 5432:5432
@@ -25,7 +25,7 @@ services:
       POSTGRES_PASSWORD: postgres
       POSTGRES_DB: elysia-boilerplate
     volumes:
-      - postgres_data:/var/lib/postgresql/data
+      - elysia-boilerplate-postgres-data:/var/lib/postgresql/data
     healthcheck:
       test: ["CMD-SHELL", "pg_isready -U postgres -d elysia-boilerplate"]
       interval: 10s
@@ -34,4 +34,4 @@ services:
     restart: unless-stopped
 
 volumes:
-  postgres_data:
+  elysia-boilerplate-postgres-data:

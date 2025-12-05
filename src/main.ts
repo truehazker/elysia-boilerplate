@@ -3,6 +3,7 @@ import openapi from '@elysiajs/openapi';
 import { Elysia, ElysiaCustomStatusResponse, status } from 'elysia';
 import config from './common/config';
 import { log } from './common/logger';
+import { migrateDb } from './db';
 import { users } from './modules/users';
 import { gracefulShutdown } from './util/graceful-shutdown';
 
@@ -58,13 +59,30 @@ const app = new Elysia()
   )
   .use(users);
 
-app.listen(config.SERVER_PORT, ({ development, hostname, port }) => {
-  log.info(
-    `🦊 Elysia is running at ${hostname}:${port} ${development ? '🚧 in development mode!🚧' : ''}`,
-  );
+/**
+ * Bootstrap the application.
+ * Runs all initialization tasks before starting the server.
+ */
+async function bootstrap(): Promise<void> {
+  // Run database migrations before accepting any requests
+  if (config.DB_AUTO_MIGRATE) {
+    await migrateDb();
+  }
+
+  // Start the server only after all initialization is complete
+  app.listen(config.SERVER_PORT, ({ development, hostname, port }) => {
+    log.info(
+      `🦊 Elysia is running at http://${hostname}:${port} ${development ? '🚧 in development mode!🚧' : ''}`,
+    );
+  });
+
+  process.once('SIGINT', () => gracefulShutdown(app, 'SIGINT'));
+  process.once('SIGTERM', () => gracefulShutdown(app, 'SIGTERM'));
+}
+
+bootstrap().catch((error) => {
+  log.fatal({ err: error }, 'Failed to start application');
+  process.exit(1);
 });
 
 export type App = typeof app;
-
-process.once('SIGINT', () => gracefulShutdown(app, 'SIGINT'));
-process.once('SIGTERM', () => gracefulShutdown(app, 'SIGTERM'));

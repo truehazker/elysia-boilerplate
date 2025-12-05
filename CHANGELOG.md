@@ -7,6 +7,15 @@ and this project adheres to [Semantic Versioning](https://semver.org/spec/v2.0.0
 
 ## [Unreleased]
 
+### Added
+
+- Added database migration error handling
+- Added automatic database migrations on server startup
+
+### Changed
+
+- Updated dependencies to the latest version
+
 ## [0.4.1] - 2025-12-03
 
 ### Changed
