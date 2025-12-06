@@ -7,6 +7,8 @@ and this project adheres to [Semantic Versioning](https://semver.org/spec/v2.0.0
 
 ## [Unreleased]
 
+## [0.4.2] - 2025-12-06
+
 ### Added
 
 - Added database migration error handling
@@ -15,6 +17,7 @@ and this project adheres to [Semantic Versioning](https://semver.org/spec/v2.0.0
 ### Changed
 
 - Updated dependencies to the latest version
+- Changed the way server starts to be more robust
 
 ## [0.4.1] - 2025-12-03
 
