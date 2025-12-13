@@ -25,32 +25,40 @@ A modern, production-ready boilerplate for building APIs with Elysia, Bun runtim
 ## Prerequisites
 
 - [Bun](https://bun.sh) (latest version)
-- [PostgreSQL](https://www.postgresql.org) (12+)
 
 ## Installation
 
 1. **Clone the repository**
+
    ```bash
    git clone <repository-url>
    cd elysia-boilerplate
    ```
 
 2. **Install dependencies**
+
    ```bash
    bun install
    ```
 
 3. **Set up PostgreSQL**
-   - Install and start PostgreSQL on your system
-   - Create a database for your project
-   - Note the connection details (host, port, database name, username, password)
+
+   **Recommended approach**: The easiest way to get started is to use the provided Docker Compose setup, which will start PostgreSQL instantly:
+
+   ```bash
+   docker-compose up -d elysia-boilerplate-postgres
+   ```
+
+   **Alternative**: If you prefer to run your own PostgreSQL instance, create a database for your project and note the connection details (host, port, database name, username, password). **Remember to update your `.env` file** with the correct `DATABASE_URL` connection string.
 
 4. **Create and configure environment variables**
+
    ```bash
    cp .env.example .env
    ```
-   
+
    **Important**: You must create a `.env` file from the provided `.env.example` template and update it with your PostgreSQL connection details:
+
    ```env
    NODE_ENV=development
    LOG_LEVEL=info
@@ -60,6 +68,7 @@ A modern, production-ready boilerplate for building APIs with Elysia, Bun runtim
    ```
 
 5. **Run database migrations**
+
    ```bash
    bun run db:migrate
    ```
@@ -67,6 +76,7 @@ A modern, production-ready boilerplate for building APIs with Elysia, Bun runtim
 ## Development
 
 Start the development server with hot reload:
+
 ```bash
 bun run dev
 ```
@@ -94,11 +104,13 @@ This project includes a testing setup using Bun's built-in test runner. Tests ar
 ### Running Tests
 
 To run all tests:
+
 ```bash
 bun test
 ```
 
 To run tests with coverage:
+
 ```bash
 bun test --coverage
 ```
@@ -108,16 +120,17 @@ bun test --coverage
 Add your test files to the `src/tests/` folder. Test files should follow the naming convention `*.test.ts`.
 
 Example test structure:
-```
+
+```text
 src/tests/
-├── users.test.ts          # User module tests
-├── auth.test.ts           # Authentication tests
-└── api.test.ts            # API endpoint tests
+├── users.test.ts         # User module tests
+├── auth.test.ts          # Authentication tests
+└── api.test.ts           # API endpoint tests
 ```
 
 ## Project Structure
 
-```
+```text
 src/
 ├── db/                   # Database configuration and schema
 │   ├── migrations/       # Database migrations
@@ -160,27 +173,31 @@ The application uses [Envalid](https://github.com/af/envalid) for type-safe envi
 | `LOG_LEVEL` | string | `info` | Logging level |
 | `SERVER_HOSTNAME` | string | `localhost` | Server hostname |
 | `SERVER_PORT` | number | `3000` | Server port |
-| `DATABASE_URL` | string | - | PostgreSQL connection URL |
+| `DATABASE_URL` | string | `postgresql://postgres:postgres@localhost:5432/elysia-boilerplate` | PostgreSQL connection URL |
 
 ## API Documentation
 
 Once the server is running, you can access the interactive API documentation at:
+
 - **Scala UI**: `http://localhost:3000/openapi`
 - **OpenAPI JSON**: `http://localhost:3000/openapi/json`
 
 ## Database Management
 
 ### Generate a new migration
+
 ```bash
 bun run db:generate
 ```
 
 ### Apply migrations
+
 ```bash
 bun run db:migrate
 ```
 
 ### Open Drizzle Studio
+
 ```bash
 bun run db:studio
 ```
@@ -205,32 +222,10 @@ docker-compose down
 ```
 
 This will start:
+
 - **Elysia application** on `http://localhost:3000`
 - **PostgreSQL database** on `localhost:5432`
 - **Automatic database migrations** on startup
-
-### Manual Docker Build
-
-If you prefer to build and run manually:
-
-```bash
-# Build the Docker image
-docker build -t elysia-boilerplate .
-
-# Run PostgreSQL
-docker run -d --name postgres \
-  -e POSTGRES_USER=postgres \
-  -e POSTGRES_PASSWORD=postgres \
-  -e POSTGRES_DB=elysia-boilerplate \
-  -p 5432:5432 \
-  postgres:17-alpine
-
-# Run the application
-docker run -d --name elysia-app \
-  -p 3000:3000 \
-  -e DATABASE_URL=postgresql://postgres:postgres@host.docker.internal:5432/elysia-boilerplate \
-  elysia-boilerplate
-```
 
 ### Docker Configuration
 
@@ -241,11 +236,13 @@ docker run -d --name elysia-app \
 ## Production Deployment
 
 1. **Build the application**
+
    ```bash
    bun run build
    ```
 
 2. **Set production environment variables**
+
    ```bash
    export NODE_ENV=production
    export DATABASE_URL=your_production_database_url
@@ -253,6 +250,7 @@ docker run -d --name elysia-app \
    ```
 
 3. **Run the application**
+
    ```bash
    ./build/server
    ```
