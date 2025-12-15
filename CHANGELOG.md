@@ -7,6 +7,12 @@ and this project adheres to [Semantic Versioning](https://semver.org/spec/v2.0.0
 
 ## [Unreleased]
 
+### Changed
+
+- Improved `README.md` with up-to-date docs
+- Fixed database variable value in `.env.example` to work with `docker-compose.yml` deployment out of the box
+- Updated Elysia to the latest `1.4.19` version
+
 ## [0.4.2] - 2025-12-06
 
 ### Added
