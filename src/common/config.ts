@@ -21,6 +21,9 @@ const config = cleanEnv(Bun.env, {
    * - If migrations fail, the server will NOT start.
    */
   DB_AUTO_MIGRATE: bool({ default: false }),
+
+  // Enable OpenAPI documentation to be available on /openapi route
+  ENABLE_OPENAPI: bool({ default: true }),
 });
 
 export default config;

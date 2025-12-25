@@ -14,7 +14,8 @@ export const users = new Elysia({ prefix: '/users', tags: ['Users'] })
         const user = await UsersService.create(body);
         log.info(`Created user ${user.name}`);
         return user;
-      } catch {
+      } catch (error) {
+        log.error({ err: error }, 'Failed to create user');
         throw status(422, {
           message: 'Failed to create user' satisfies UsersModel.createError,
         });
@@ -39,7 +40,8 @@ export const users = new Elysia({ prefix: '/users', tags: ['Users'] })
         const users = await UsersService.get(query);
         log.info(`Got users ${users.total}`);
         return users;
-      } catch {
+      } catch (error) {
+        log.error({ err: error }, 'Failed to get users');
         throw status(422, {
           message: 'Failed to get users' satisfies UsersModel.getError,
         });

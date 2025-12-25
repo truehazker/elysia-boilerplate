@@ -7,6 +7,11 @@ and this project adheres to [Semantic Versioning](https://semver.org/spec/v2.0.0
 
 ## [Unreleased]
 
+### Changed
+
+- Extracted global error handler into separate middleware file (`src/middleware/error-handler.ts`)
+- Enhanced error logging in users module to log all caught errors before returning responses
+
 ## [0.4.3] - 2025-12-15
 
 ### Changed
