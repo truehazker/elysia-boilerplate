@@ -7,7 +7,7 @@ const config = cleanEnv(Bun.env, {
   }),
   LOG_LEVEL: str({
     choices: ['info', 'debug', 'warn', 'error', 'fatal', 'trace', 'silent'],
-    default: 'info',
+    default: 'debug',
   }),
   SERVER_HOSTNAME: str({ default: 'localhost' }),
   SERVER_PORT: port({ default: 3000 }),
