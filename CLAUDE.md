@@ -112,7 +112,7 @@ After schema changes, run `bun run db:generate` to create migration.
 - Available config: `NODE_ENV`, `LOG_LEVEL`, `SERVER_HOSTNAME`, `SERVER_PORT`, `DATABASE_URL`, `DB_AUTO_MIGRATE`, `ENABLE_OPENAPI`
 
 ### Error Handling
-Global error handler in `src/main.ts:12-36`:
+Global error handler in `src/middleware/error-handler.ts`:
 - Elysia's handled errors (status codes) pass through
 - Unhandled errors are logged with context (method, URL, referrer)
 - Clients receive generic "Internal Server Error" (never expose details)
