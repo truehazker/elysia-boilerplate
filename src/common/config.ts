@@ -7,7 +7,7 @@ const config = cleanEnv(Bun.env, {
   }),
   LOG_LEVEL: str({
     choices: ['info', 'debug', 'warn', 'error', 'fatal', 'trace', 'silent'],
-    default: 'info',
+    default: 'debug',
   }),
   SERVER_HOSTNAME: str({ default: 'localhost' }),
   SERVER_PORT: port({ default: 3000 }),
@@ -21,6 +21,9 @@ const config = cleanEnv(Bun.env, {
    * - If migrations fail, the server will NOT start.
    */
   DB_AUTO_MIGRATE: bool({ default: false }),
+
+  // Enable OpenAPI documentation to be available on /openapi route
+  ENABLE_OPENAPI: bool({ default: true }),
 });
 
 export default config;

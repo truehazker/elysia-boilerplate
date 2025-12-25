@@ -1,45 +1,16 @@
 import cors from '@elysiajs/cors';
 import openapi from '@elysiajs/openapi';
-import { Elysia, ElysiaCustomStatusResponse, status } from 'elysia';
+import { Elysia } from 'elysia';
 import config from './common/config';
 import { log } from './common/logger';
 import { migrateDb } from './db';
+import { errorHandler } from './middleware/error-handler';
 import { users } from './modules/users';
 import { gracefulShutdown } from './util/graceful-shutdown';
 
 const app = new Elysia()
   .use(cors())
-  .use(
-    log.into({
-      useLevel: config.LOG_LEVEL,
-      autoLogging: false,
-    }),
-  )
-  .onError(({ code, error, request }) => {
-    // Return Elysia's handled errors as-is
-    if (error instanceof ElysiaCustomStatusResponse || code !== 'UNKNOWN') {
-      return error;
-    }
-
-    // Log unhandled errors
-    log.error(
-      {
-        code,
-        err: error,
-        http: request
-          ? {
-              method: request.method,
-              url: request.url,
-              referrer: request.headers.get('referer') ?? undefined,
-            }
-          : undefined,
-      },
-      'Unhandled error',
-    );
-
-    // Do not expose unhandled errors to the client
-    return status(500, 'Internal Server Error');
-  })
+  .use(errorHandler)
   .use(
     openapi({
       documentation: {
@@ -55,6 +26,7 @@ const app = new Elysia()
           },
         ],
       },
+      enabled: config.ENABLE_OPENAPI,
     }),
   )
   .use(users);
@@ -74,6 +46,13 @@ async function bootstrap(): Promise<void> {
     log.info(
       `🦊 Elysia is running at http://${hostname}:${port} ${development ? '🚧 in development mode!🚧' : ''}`,
     );
+    if (config.ENABLE_OPENAPI) {
+      log.debug(
+        `📚 OpenAPI documentation is available at http://${hostname}:${port}/openapi`,
+      );
+    } else {
+      log.debug('📚 OpenAPI documentation is disabled');
+    }
   });
 
   process.once('SIGINT', () => gracefulShutdown(app, 'SIGINT'));

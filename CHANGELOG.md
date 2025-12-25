@@ -7,6 +7,27 @@ and this project adheres to [Semantic Versioning](https://semver.org/spec/v2.0.0
 
 ## [Unreleased]
 
+### Added
+
+- Added `CLAUDE.md` with comprehensive development guidelines for AI-assisted development
+- Added `ENABLE_OPENAPI` environment variable to control OpenAPI documentation availability
+- Added new `src/middleware/error-handler.ts` for centralized error handling
+- Added startup logging to indicate OpenAPI documentation availability status
+
+### Changed
+
+- Extracted global error handler into separate middleware file (`src/middleware/error-handler.ts`)
+- Enhanced error logging in users module to log all caught errors before returning responses
+- Updated `src/common/logger.ts` to use raw `pino` instead of elysia-logger wrapper
+- Updated OpenAPI integration to respect `ENABLE_OPENAPI` configuration
+- Updated `.env.example` with `ENABLE_OPENAPI` setting and changed default `LOG_LEVEL` to `debug`
+- Updated dependencies: `@elysiajs/openapi` to ^1.4.12, `drizzle-orm` to ^0.45.1, `elysia` to ^1.4.19
+- Cleaned up `src/main.ts` by moving error handling logic to dedicated middleware
+
+### Removed
+
+- Removed `@bogeychan/elysia-logger` dependency in favor of raw Pino integration
+
 ## [0.4.3] - 2025-12-15
 
 ### Changed

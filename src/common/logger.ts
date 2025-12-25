@@ -1,7 +1,7 @@
-import { createPinoLogger } from '@bogeychan/elysia-logger';
+import pino from 'pino';
 import config from './config';
 
-export const log = createPinoLogger({
+export const log = pino({
   level: config.LOG_LEVEL,
   transport: ['development', 'test'].includes(config.NODE_ENV)
     ? {
