@@ -1,6 +1,6 @@
 {
   "name": "elysia-boilerplate",
-  "version": "0.4.4",
+  "version": "0.4.5",
   "description": "A modern, production-ready boilerplate for building APIs with Elysia, Bun runtime, and PostgreSQL.",
   "author": "Truehazker",
   "license": "MIT",
