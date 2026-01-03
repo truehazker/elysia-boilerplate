@@ -47,11 +47,11 @@ async function bootstrap(): Promise<void> {
       `🦊 Elysia is running at http://${hostname}:${port} ${development ? '🚧 in development mode!🚧' : ''}`,
     );
     if (config.ENABLE_OPENAPI) {
-      log.debug(
+      log.info(
         `📚 OpenAPI documentation is available at http://${hostname}:${port}/openapi`,
       );
     } else {
-      log.debug('📚 OpenAPI documentation is disabled');
+      log.info('📚 OpenAPI documentation is disabled');
     }
   });
 
