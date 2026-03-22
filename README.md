@@ -6,10 +6,16 @@
 [![Drizzle](https://img.shields.io/badge/Drizzle-C5F74F?logo=drizzle&logoColor=000)](https://orm.drizzle.team)
 [![TypeScript](https://img.shields.io/badge/TypeScript-007ACC?logo=typescript&logoColor=white)](https://www.typescriptlang.org)
 [![Docker](https://img.shields.io/badge/Docker-2496ED?logo=docker&logoColor=white)](https://www.docker.com)
-[![Tests](https://github.com/truehazker/elysia-boilerplate/actions/workflows/tests.yml/badge.svg)](https://github.com/truehazker/elysia-boilerplate/actions/workflows/tests.yml)
-[![Lint](https://github.com/truehazker/elysia-boilerplate/actions/workflows/lint.yml/badge.svg)](https://github.com/truehazker/elysia-boilerplate/actions/workflows/lint.yml)
+[![Tests][tests-badge]][tests-url]
+[![Lint][lint-badge]][lint-url]
 
-A modern, production-ready boilerplate for building APIs with Elysia, Bun runtime, and PostgreSQL.
+[tests-badge]: https://github.com/truehazker/elysia-boilerplate/actions/workflows/tests.yml/badge.svg
+[tests-url]: https://github.com/truehazker/elysia-boilerplate/actions/workflows/tests.yml
+[lint-badge]: https://github.com/truehazker/elysia-boilerplate/actions/workflows/lint.yml/badge.svg
+[lint-url]: https://github.com/truehazker/elysia-boilerplate/actions/workflows/lint.yml
+
+A modern boilerplate for building APIs with Elysia, Bun runtime,
+and PostgreSQL.
 
 ## Features
 
@@ -19,7 +25,8 @@ A modern, production-ready boilerplate for building APIs with Elysia, Bun runtim
 - **Drizzle ORM** - Type-safe SQL ORM with excellent TypeScript support
 - **Pino Logger** - High-performance JSON logger
 - **OpenAPI** - Automatic API documentation generation
-- **Environment Configuration** - Type-safe environment variable validation with Envalid
+- **Environment Configuration** - Type-safe environment variable validation
+  with Envalid
 - **Modular Architecture** - Clean, organized code structure
 
 ## Prerequisites
@@ -43,13 +50,15 @@ A modern, production-ready boilerplate for building APIs with Elysia, Bun runtim
 
 3. **Set up PostgreSQL**
 
-   **Recommended approach**: The easiest way to get started is to use the provided Docker Compose setup, which will start PostgreSQL instantly:
+   **Recommended approach**: Use the provided Docker Compose setup,
+   which will start PostgreSQL instantly:
 
    ```bash
    docker-compose up -d elysia-boilerplate-postgres
    ```
 
-   **Alternative**: If you prefer to run your own PostgreSQL instance, create a database for your project and note the connection details (host, port, database name, username, password). **Remember to update your `.env` file** with the correct `DATABASE_URL` connection string.
+   **Alternative**: Run your own PostgreSQL instance, create a database,
+   and update your `.env` file with the correct `DATABASE_URL`.
 
 4. **Create and configure environment variables**
 
@@ -57,14 +66,15 @@ A modern, production-ready boilerplate for building APIs with Elysia, Bun runtim
    cp .env.example .env
    ```
 
-   **Important**: You must create a `.env` file from the provided `.env.example` template and update it with your PostgreSQL connection details:
+   **Important**: Create a `.env` file from the provided `.env.example`
+   template and update it with your PostgreSQL connection details:
 
    ```env
    NODE_ENV=development
    LOG_LEVEL=info
    SERVER_HOSTNAME=localhost
    SERVER_PORT=3000
-   DATABASE_URL=postgresql://username:password@localhost:5432/your_database_name
+   DATABASE_URL=postgresql://username:password@localhost:5432/your_db
    ```
 
 5. **Run database migrations**
@@ -86,7 +96,7 @@ The server will start at `http://localhost:3000` (or your configured port).
 ## Available Scripts
 
 | Command | Description |
-|---------|-------------|
+| --- | --- |
 | `bun run dev` | Start development server with hot reload |
 | `bun run start` | Start production server |
 | `bun run build` | Build the application for production |
@@ -99,7 +109,8 @@ The server will start at `http://localhost:3000` (or your configured port).
 
 ## Testing
 
-This project includes a testing setup using Bun's built-in test runner. Tests are located in the `src/tests/` folder.
+This project includes a testing setup using Bun's built-in test runner.
+Tests are located in the `src/tests/` folder.
 
 ### Running Tests
 
@@ -117,15 +128,16 @@ bun test --coverage
 
 ### Adding Tests
 
-Add your test files to the `src/tests/` folder. Test files should follow the naming convention `*.test.ts`.
+Add your test files to the `src/tests/` folder.
+Test files should follow the naming convention `*.test.ts`.
 
 Example test structure:
 
 ```text
 src/tests/
 ├── users.test.ts         # User module tests
-├── auth.test.ts          # Authentication tests
-└── api.test.ts           # API endpoint tests
+├── health.test.ts        # Health endpoint tests
+└── ...
 ```
 
 ## Project Structure
@@ -138,8 +150,12 @@ src/
 │   └── schema/           # Drizzle schema definitions
 ├── common/               # Shared utilities
 │   ├── config.ts         # Environment configuration
+│   ├── errors.ts         # Domain error types
+│   ├── schema.ts         # Shared response schemas
 │   └── logger.ts         # Logger setup
 ├── modules/              # Feature modules
+│   ├── health/           # Health & readiness endpoints
+│   │   └── index.ts      # GET /health, GET /ready
 │   └── users/            # User module example
 │       ├── index.ts      # Route definitions
 │       ├── model.ts      # Data models
@@ -149,35 +165,41 @@ src/
 
 ### Important Notes on Logger Usage
 
-The logger is initialized in the root application (`src/main.ts`) using `.use(log.into({...}))`. To avoid duplicate logs, submodules should import and use the logger directly from `src/common/logger` rather than relying on Elysia's context. Using the logger from context in submodules will result in duplicate log entries.
+To avoid duplicate logs, submodules should import and use the logger
+directly from `src/common/logger` rather than relying on Elysia's context.
 
 **Example:**
 
 ```typescript
-// ✅ Correct: Import logger directly
+// Correct: Import logger directly
 import { log } from 'src/common/logger';
 
-// ❌ Incorrect: Using logger from Elysia context in submodules
+// Incorrect: Using logger from Elysia context in submodules
 // This will cause duplicate logs
 ```
 
 ## Configuration
 
-The application uses [Envalid](https://github.com/af/envalid) for type-safe environment variable validation. All configuration is centralized in `src/common/config.ts`.
+The application uses [Envalid](https://github.com/af/envalid)
+for type-safe environment variable validation.
+All configuration is centralized in `src/common/config.ts`.
 
 ### Environment Variables
 
 | Variable | Type | Default | Description |
-|----------|------|---------|-------------|
+| --- | --- | --- | --- |
 | `NODE_ENV` | string | `development` | Application environment |
 | `LOG_LEVEL` | string | `info` | Logging level |
-| `SERVER_HOSTNAME` | string | `localhost` | Server hostname |
+| `SERVER_HOSTNAME` | string | `localhost` | Server bind address |
 | `SERVER_PORT` | number | `3000` | Server port |
-| `DATABASE_URL` | string | `postgresql://postgres:postgres@localhost:5432/elysia-boilerplate` | PostgreSQL connection URL |
+| `DATABASE_URL` | string | *(required)* | PostgreSQL connection URL |
+| `DB_AUTO_MIGRATE` | boolean | `false` | Run migrations on startup |
+| `ENABLE_OPENAPI` | boolean | `true` | Enable OpenAPI docs at `/openapi` |
 
 ## API Documentation
 
-Once the server is running, you can access the interactive API documentation at:
+Once the server is running, you can access the interactive
+API documentation at:
 
 - **Scala UI**: `http://localhost:3000/openapi`
 - **OpenAPI JSON**: `http://localhost:3000/openapi/json`
@@ -204,7 +226,8 @@ bun run db:studio
 
 ## Docker Deployment
 
-This project includes Docker configuration for easy deployment and development.
+This project includes Docker configuration for easy deployment
+and development.
 
 ### Using Docker Compose (Recommended)
 
@@ -229,9 +252,12 @@ This will start:
 
 ### Docker Configuration
 
-- **Dockerfile**: Multi-stage build using Bun runtime, compiles TypeScript and creates optimized binary
-- **docker-compose.yml**: Complete stack with PostgreSQL, health checks, and persistent data storage
-- **Environment**: Production-ready configuration with proper networking and restart policies
+- **Dockerfile**: Multi-stage build using Bun runtime,
+  compiles TypeScript and creates optimized binary
+- **docker-compose.yml**: Complete stack with PostgreSQL,
+  health checks, and persistent data storage
+- **Environment**: Configuration with proper networking,
+  restart policies, and auto-migration
 
 ## Production Deployment
 
@@ -257,7 +283,8 @@ This will start:
 
 ## Using Agents
 
-This repository features an `AGENTS.md` file that outlines the recommended tools and commands for using agents.
+This repository features an `AGENTS.md` file that outlines
+the recommended tools and commands for using agents.
 
 You can use cursor, claude, etc. to use agents
 
@@ -271,4 +298,5 @@ You can use cursor, claude, etc. to use agents
 
 ## License
 
-This project is licensed under the MIT License - see the [LICENSE](LICENSE) file for details.
+This project is licensed under the MIT License - see the
+[LICENSE](LICENSE) file for details.

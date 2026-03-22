@@ -1,4 +1,5 @@
 import Elysia, { t } from 'elysia';
+import { errorResponse } from '../../common/schema';
 import { userCreate, userSelect } from '../../db/schema/users';
 
 export namespace UsersModel {
@@ -13,7 +14,9 @@ export namespace UsersModel {
   export const createResponse = t.Omit(userSelect, ['createdAt', 'updatedAt']);
   export type createResponse = typeof createResponse.static;
 
-  export const createError = t.Literal('Failed to create user');
+  export const createError = errorResponse(
+    'User could not be created due to a conflict',
+  );
   export type createError = typeof createError.static;
 
   // Get users
@@ -33,9 +36,6 @@ export namespace UsersModel {
     total: t.Number(),
   });
   export type getResponse = typeof getResponse.static;
-
-  export const getError = t.Literal('Failed to get users');
-  export type getError = typeof getError.static;
 }
 
 export const usersModelPlugin = new Elysia().model({
@@ -44,5 +44,4 @@ export const usersModelPlugin = new Elysia().model({
   'users.createError': UsersModel.createError,
   'users.getQuery': UsersModel.getQuery,
   'users.getResponse': UsersModel.getResponse,
-  'users.getError': UsersModel.getError,
 });

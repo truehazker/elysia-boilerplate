@@ -8,6 +8,7 @@ const log = logger.child({ name: 'error-handler' });
  * Catches all unhandled errors and logs them
  */
 export const errorHandler = new Elysia({ name: 'error-handler' }).onError(
+  { as: 'global' },
   ({ code, error, request }) => {
     // Return Elysia's handled errors as-is
     if (error instanceof ElysiaCustomStatusResponse || code !== 'UNKNOWN') {

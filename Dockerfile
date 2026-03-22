@@ -26,10 +26,8 @@ RUN apk --no-cache add libstdc++ libgcc
 # Copy the compiled binary directly from builder stage
 COPY --from=builder /app/build/server /server
 
-# Make the binary executable
 RUN chmod +x /server
 
 EXPOSE 3000
 
-# Use the compressed binary
 CMD ["/server"]

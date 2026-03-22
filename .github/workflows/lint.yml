@@ -12,7 +12,7 @@ on:
 
 jobs:
   lint:
-    name: Biome Lint Check
+    name: Lint & Type Check
     runs-on: ubuntu-latest
 
     steps:
@@ -29,3 +29,6 @@ jobs:
 
       - name: Run Biome linter
         run: bun run lint
+
+      - name: Type check
+        run: bunx tsc --noEmit

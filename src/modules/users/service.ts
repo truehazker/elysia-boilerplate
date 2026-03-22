@@ -1,5 +1,4 @@
 import { count } from 'drizzle-orm';
-import { status } from 'elysia';
 import db from '../../db';
 import { users } from '../../db/schema/users';
 import type { UsersModel } from './model';
@@ -7,19 +6,14 @@ import type { UsersModel } from './model';
 export abstract class UsersService {
   static async create(
     body: UsersModel.createRequest,
-  ): Promise<UsersModel.createResponse> {
+  ): Promise<UsersModel.createResponse | null> {
     const [user] = await db
       .insert(users)
-      .values({ ...body })
+      .values(body)
+      .onConflictDoNothing({ target: users.email })
       .returning();
 
-    if (!user) {
-      throw status(422, {
-        message: 'Failed to create user' satisfies UsersModel.createError,
-      });
-    }
-
-    return user;
+    return user ?? null;
   }
 
   static async get(

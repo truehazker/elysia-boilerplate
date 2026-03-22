@@ -30,7 +30,10 @@ jobs:
       - name: Prepare environment variables
         run: |
           echo "NODE_ENV=test" >> $GITHUB_ENV
-          echo "DATABASE_URL=${{ secrets.DATABASE_URL }}" >> $GITHUB_ENV
+          echo "DATABASE_URL=postgresql://localhost:5432/test" >> $GITHUB_ENV
 
       - name: Run tests
         run: bun test
+
+      - name: Build
+        run: bun run build

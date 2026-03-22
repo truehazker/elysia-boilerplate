@@ -10,22 +10,20 @@ export const users = new Elysia({ prefix: '/users', tags: ['Users'] })
   .post(
     '/',
     async ({ body }): Promise<UsersModel.createResponse> => {
-      try {
-        const user = await UsersService.create(body);
-        log.info(`Created user ${user.name}`);
-        return user;
-      } catch (error) {
-        log.error({ err: error }, 'Failed to create user');
-        throw status(422, {
-          message: 'Failed to create user' satisfies UsersModel.createError,
-        });
+      const user = await UsersService.create(body);
+      if (!user) {
+        throw status(409, {
+          message: 'User could not be created due to a conflict',
+        } satisfies UsersModel.createError);
       }
+      log.info(`Created user ${user.name}`);
+      return user;
     },
     {
       body: 'users.createRequest',
       response: {
         200: 'users.createResponse',
-        422: 'users.createError',
+        409: 'users.createError',
       },
       detail: {
         summary: 'Create a new user',
@@ -36,22 +34,14 @@ export const users = new Elysia({ prefix: '/users', tags: ['Users'] })
   .get(
     '/',
     async ({ query }): Promise<UsersModel.getResponse> => {
-      try {
-        const users = await UsersService.get(query);
-        log.info(`Got users ${users.total}`);
-        return users;
-      } catch (error) {
-        log.error({ err: error }, 'Failed to get users');
-        throw status(422, {
-          message: 'Failed to get users' satisfies UsersModel.getError,
-        });
-      }
+      const users = await UsersService.get(query);
+      log.info(`Got users ${users.total}`);
+      return users;
     },
     {
       query: 'users.getQuery',
       response: {
         200: 'users.getResponse',
-        422: 'users.getError',
       },
       detail: {
         summary: 'Get all users',
