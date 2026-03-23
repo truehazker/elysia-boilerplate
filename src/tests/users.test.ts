@@ -116,9 +116,7 @@ describe('Users Module', () => {
       expect(response.status).toBe(409);
 
       const body = (await response.json()) as { message: string };
-      expect(body.message).toBe(
-        'User could not be created due to a conflict',
-      );
+      expect(body.message).toBe('User could not be created due to a conflict');
     });
 
     it('should return 500 for unexpected errors', async () => {

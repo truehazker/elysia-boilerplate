@@ -6,8 +6,8 @@ WORKDIR /app
 # Copy package files
 COPY package.json bun.lock ./
 
-# Install dependencies
-RUN bun install
+# Install dependencies (frozen lockfile for reproducibility)
+RUN bun install --frozen-lockfile
 
 # Copy source files
 COPY src ./src
@@ -17,7 +17,7 @@ COPY tsconfig.json ./
 # Build the application for Linux
 RUN bun build --compile --minify-whitespace --minify-syntax --outfile build/server src/main.ts
 
-# Final stage - ultra-minimal runtime using alpine-glibc (16MB base)
+# Final stage - ultra-minimal runtime
 FROM frolvlad/alpine-glibc
 
 # Install only essential C++ runtime libraries (minimal overhead)

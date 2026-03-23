@@ -206,19 +206,62 @@ API documentation at:
 
 ## Database Management
 
-### Generate a new migration
+This project uses [Drizzle ORM](https://orm.drizzle.team) for schema
+definitions and migrations. Migration files live in `src/db/migrations/`
+and are generated from the schema definitions in `src/db/schema/`.
+
+### Generating Migrations
+
+After changing any table definition in `src/db/schema/`, generate
+a new migration file:
 
 ```bash
 bun run db:generate
 ```
 
-### Apply migrations
+This produces a timestamped SQL migration in `src/db/migrations/`.
+Always review the generated SQL before applying it.
+
+### Applying Migrations
+
+#### Local Development
+
+Run migrations manually with the Drizzle CLI:
 
 ```bash
 bun run db:migrate
 ```
 
-### Open Drizzle Studio
+Alternatively, set `DB_AUTO_MIGRATE=true` in your `.env` file to run
+pending migrations automatically on server startup. The bootstrap
+function in `src/main.ts` checks this flag and calls `migrateDb()`
+before the server begins accepting requests.
+
+> **Note:** Auto-migration is intended for local development only.
+> In the Docker Compose setup, the application container does **not**
+> enable `DB_AUTO_MIGRATE` — it is effectively a no-op unless you
+> explicitly set the variable. Do not rely on auto-migration in
+> production or shared environments.
+
+#### Production
+
+Running migrations at application startup in production is discouraged
+because it introduces risk when multiple replicas start simultaneously
+and couples deployments with schema changes. Instead, use one of the
+following approaches:
+
+- **Drizzle CLI** — run `bun run db:migrate` as an explicit step in
+  your CI/CD pipeline before deploying the new application version.
+- **Sidecar / init container** — in Kubernetes or similar orchestrators,
+  run a one-shot migration container (using the same image) before
+  the application pods start.
+- **Dedicated migration tool** — integrate with a schema management
+  tool like [Atlas](https://atlasgo.io) for more advanced workflows
+  such as drift detection, linting, and approval gates.
+
+### Drizzle Studio
+
+Open a GUI to browse and edit your local database:
 
 ```bash
 bun run db:studio
@@ -248,7 +291,6 @@ This will start:
 
 - **Elysia application** on `http://localhost:3000`
 - **PostgreSQL database** on `localhost:5432`
-- **Automatic database migrations** on startup
 
 ### Docker Configuration
 
