@@ -9,7 +9,7 @@
 
   "files": {
     "ignoreUnknown": false,
-    "includes": ["**", "!.claude", "!.agents"]
+    "includes": ["**", "!.claude", "!.agents", "!src/db/migrations"]
   },
 
   "formatter": {

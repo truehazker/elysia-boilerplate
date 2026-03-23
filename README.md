@@ -150,7 +150,6 @@ src/
 │   └── schema/           # Drizzle schema definitions
 ├── common/               # Shared utilities
 │   ├── config.ts         # Environment configuration
-│   ├── errors.ts         # Domain error types
 │   ├── schema.ts         # Shared response schemas
 │   └── logger.ts         # Logger setup
 ├── modules/              # Feature modules
@@ -279,7 +278,7 @@ and development.
 The easiest way to run the entire stack is with Docker Compose:
 
 ```bash
-# Start all services (app + database)
+# Start all services (app + database + migration sidecar)
 docker-compose up -d
 
 # View logs
@@ -291,7 +290,8 @@ docker-compose down
 
 This will start:
 
-- **Elysia application** on `http://localhost:3000`
+- **Migration sidecar** — runs pending migrations then exits
+- **Elysia application** on `http://localhost:3000` (starts after migrations succeed)
 - **PostgreSQL database** on `localhost:5432`
 
 ### Docker Configuration

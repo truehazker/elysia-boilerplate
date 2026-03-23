@@ -1,6 +1,6 @@
 {
-  "id": "7dee9177-f96e-4716-9f3a-9704bdc1350b",
-  "prevId": "ae4e6c14-3efe-4132-b1c4-cc83dccf17d4",
+  "id": "8ecb4de6-8b5f-46ae-ab84-eb03e27f2793",
+  "prevId": "00000000-0000-0000-0000-000000000000",
   "version": "7",
   "dialect": "postgresql",
   "tables": {
@@ -54,7 +54,9 @@
         "users_email_unique": {
           "name": "users_email_unique",
           "nullsNotDistinct": false,
-          "columns": ["email"]
+          "columns": [
+            "email"
+          ]
         }
       },
       "policies": {},
