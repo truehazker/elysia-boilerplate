@@ -11,10 +11,21 @@ services:
       SERVER_HOSTNAME: 0.0.0.0
       SERVER_PORT: 3000
       DATABASE_URL: postgresql://postgres:postgres@elysia-boilerplate-postgres:5432/elysia-boilerplate
+      ENABLE_OPENAPI: "false"
+    depends_on:
+      elysia-boilerplate-migrate:
+        condition: service_completed_successfully
+    restart: unless-stopped
+
+  elysia-boilerplate-migrate:
+    build:
+      context: .
+      dockerfile: Dockerfile.migrate
+    environment:
+      DATABASE_URL: postgresql://postgres:postgres@elysia-boilerplate-postgres:5432/elysia-boilerplate
     depends_on:
       elysia-boilerplate-postgres:
         condition: service_healthy
-    restart: unless-stopped
 
   elysia-boilerplate-postgres:
     image: postgres:17-alpine

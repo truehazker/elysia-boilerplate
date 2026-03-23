@@ -9,6 +9,8 @@ const db = drizzle({
   connection: {
     connectionString: config.DATABASE_URL,
     max: 10,
+    connectionTimeoutMillis: 5000,
+    statement_timeout: 5000,
   },
   casing: 'snake_case',
 });

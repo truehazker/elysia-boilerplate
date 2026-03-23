@@ -1,6 +1,7 @@
 # CLAUDE.md
 
-This file provides guidance to Claude Code (claude.ai/code) when working with code in this repository.
+This file provides guidance to Claude Code (claude.ai/code) when working
+with code in this repository.
 
 ## Development Commands
 
@@ -37,29 +38,35 @@ docker-compose down            # Stop all services
 ## Architecture Overview
 
 ### Request Flow
+
 1. Request enters through `src/main.ts` (root Elysia app)
 2. Global middleware applied: CORS, error handling, OpenAPI
-3. Routed to module in `src/modules/` (e.g., `/users` → `src/modules/users/`)
-4. Module structure: `index.ts` (routes) → `service.ts` (business logic) → database
+3. Routed to module in `src/modules/` (e.g., `/users` -> `src/modules/users/`)
+4. Module structure: `index.ts` (routes) -> `service.ts` (business logic) -> database
 
 ### Logger Architecture (CRITICAL)
-The logger is initialized **once** in `src/main.ts` using `.use(log.into({...}))`. To avoid duplicate logs:
+
+The logger is initialized **once** in `src/main.ts`. To avoid duplicate logs:
+
 - **DO NOT** use logger from Elysia context (`ctx.log`) in submodules
 - **ALWAYS** import logger directly: `import { log } from 'src/common/logger'`
 - Create child loggers for modules: `const log = logger.child({ name: 'module-name' })`
 
 Example from `src/modules/users/index.ts`:
+
 ```typescript
 import { log as logger } from 'src/common/logger';
 const log = logger.child({ name: 'users' });
 ```
 
 ### Module Pattern
+
 Each module in `src/modules/` follows this structure:
 
 1. **`schema/` in `src/db/schema/`**: Drizzle table definition + validation schemas
    - Define table with `pgTable()`
-   - Export `createInsertSchema`, `createSelectSchema`, `createUpdateSchema` from drizzle-typebox
+   - Export `createInsertSchema`, `createSelectSchema`, `createUpdateSchema`
+     from drizzle-typebox
    - Add Elysia field refinements (validation rules)
 
 2. **`model.ts`**: Type definitions and Elysia model plugin
@@ -70,14 +77,17 @@ Each module in `src/modules/` follows this structure:
 3. **`service.ts`**: Business logic and database operations
    - Pure functions that interact with database
    - No HTTP concerns (status codes, headers, etc.)
+   - No HTTP concerns (status codes, headers, etc.)
 
 4. **`index.ts`**: Route definitions (Elysia controller)
    - Define routes with `.get()`, `.post()`, etc.
    - Reference models by string: `body: 'users.createRequest'`
-   - Handle errors and return proper HTTP status codes
+   - Catch specific errors and map to HTTP with `status()` from Elysia
+   - Let unknown errors propagate to the global handler
    - OpenAPI documentation in `detail` field
 
 ### Database Schema Pattern
+
 When creating/modifying tables in `src/db/schema/`:
 
 ```typescript
@@ -106,19 +116,33 @@ export const userUpdate = _userUpdate;
 After schema changes, run `bun run db:generate` to create migration.
 
 ### Environment Configuration
+
 - All env vars validated in `src/common/config.ts` using Envalid
 - **NEVER** use `process.env` or `Bun.env` directly in application code
 - Always import: `import config from 'src/common/config'`
-- Available config: `NODE_ENV`, `LOG_LEVEL`, `SERVER_HOSTNAME`, `SERVER_PORT`, `DATABASE_URL`, `DB_AUTO_MIGRATE`, `ENABLE_OPENAPI`
+- Available config: `NODE_ENV`, `LOG_LEVEL`, `SERVER_HOSTNAME`,
+  `SERVER_PORT`, `DATABASE_URL`, `DB_AUTO_MIGRATE`, `ENABLE_OPENAPI`
 
 ### Error Handling
-Global error handler in `src/middleware/error-handler.ts`:
+
+Global error handler in `src/middleware/error-handler.ts`
+(registered with `{ as: 'global' }` to cover all plugins):
+
 - Elysia's handled errors (status codes) pass through
 - Unhandled errors are logged with context (method, URL, referrer)
 - Clients receive generic "Internal Server Error" (never expose details)
 
+### Health Endpoints
+
+- `GET /health` -- liveness check, returns `{ status: 'pass' }`
+- `GET /ready` -- readiness check, verifies DB connectivity
+- Responses use `application/health+json` content type per IETF draft
+- Status values follow RFC: `pass`, `fail`, `warn`
+
 ### Bootstrap Process
+
 `src/main.ts` bootstrap function:
+
 1. Run database migrations (if `DB_AUTO_MIGRATE=true`)
 2. Start HTTP server
 3. Register graceful shutdown handlers (SIGINT, SIGTERM)
@@ -126,23 +150,27 @@ Global error handler in `src/middleware/error-handler.ts`:
 If bootstrap fails, app logs fatal error and exits with code 1.
 
 ## Branch Strategy
+
 - `main`: Production releases
 - `develop`: Integration branch (default PR target)
 - `feature/*`: New features
 - GitHub Actions run lint checks on push/PR to `main` and `develop`
 
 ## TypeScript Configuration
+
 - Strict mode enabled (`strict: true`)
 - No unchecked indexed access (`noUncheckedIndexedAccess: true`)
 - Module resolution: `bundler` (Bun-specific)
 - Base URL set to `.` for absolute imports from project root
 
 ## Testing
+
 - Test files in `src/tests/` named `*.test.ts`
 - Use Bun's built-in test runner
 - All new features require tests
 
 ## Code Style
+
 - Linter: Biome (config in `biome.json`)
 - Run `bun run lint:fix` before committing
 - No `any` types unless absolutely necessary

@@ -1,11 +1,18 @@
 import { beforeEach, describe, expect, it, mock } from 'bun:test';
-import type { UsersModel } from 'src/modules/users/model';
-import { users } from '../modules/users/index';
-import { UsersService } from '../modules/users/service';
+import { Elysia } from 'elysia';
+import { errorHandler } from 'src/middleware/error-handler';
+import { users } from 'src/modules/users/index';
+import { UsersService } from 'src/modules/users/service';
 
-// Mock the UsersService
+interface User {
+  id: string;
+  name: string;
+  surname: string;
+  email: string;
+}
+
 const mockUsersService = {
-  create: mock(() =>
+  create: mock<() => Promise<User | null>>(() =>
     Promise.resolve({
       id: '0199477e-7aa7-7000-a65a-96e2efd46c10',
       name: 'John',
@@ -28,8 +35,9 @@ const mockUsersService = {
   ),
 };
 
-// Mock the service methods
 Object.assign(UsersService, mockUsersService);
+
+const app = new Elysia().use(errorHandler).use(users);
 
 describe('Users Module', () => {
   beforeEach(() => {
@@ -45,7 +53,7 @@ describe('Users Module', () => {
         email: 'john.doe@example.com',
       };
 
-      const response = await users.handle(
+      const response = await app.handle(
         new Request('http://localhost/users', {
           method: 'POST',
           headers: { 'Content-Type': 'application/json' },
@@ -60,42 +68,99 @@ describe('Users Module', () => {
       expect(responseData).toHaveProperty('surname', 'Doe');
       expect(responseData).toHaveProperty('email', 'john.doe@example.com');
 
-      // Verify the service was called with correct data
       expect(mockUsersService.create).toHaveBeenCalledWith(userData);
     });
 
-    it('should return validation error for missing required fields', async () => {
-      const invalidUserData = {
-        name: 'John',
-        // missing surname and email
-      };
-
-      const response = await users.handle(
+    it('should return 400 for missing required fields', async () => {
+      const response = await app.handle(
         new Request('http://localhost/users', {
           method: 'POST',
           headers: { 'Content-Type': 'application/json' },
-          body: JSON.stringify(invalidUserData),
+          body: JSON.stringify({ name: 'John' }),
         }),
       );
-      expect(response.status).toBe(422);
-
+      expect(response.status).toBe(400);
       expect(mockUsersService.create).not.toHaveBeenCalled();
+    });
+
+    it('should return 400 for invalid email format', async () => {
+      const response = await app.handle(
+        new Request('http://localhost/users', {
+          method: 'POST',
+          headers: { 'Content-Type': 'application/json' },
+          body: JSON.stringify({
+            name: 'John',
+            surname: 'Doe',
+            email: 'not-an-email',
+          }),
+        }),
+      );
+      expect(response.status).toBe(400);
+      expect(mockUsersService.create).not.toHaveBeenCalled();
+    });
+
+    it('should return 409 on duplicate email', async () => {
+      mockUsersService.create.mockResolvedValueOnce(null);
+
+      const response = await app.handle(
+        new Request('http://localhost/users', {
+          method: 'POST',
+          headers: { 'Content-Type': 'application/json' },
+          body: JSON.stringify({
+            name: 'John',
+            surname: 'Doe',
+            email: 'dupe@example.com',
+          }),
+        }),
+      );
+      expect(response.status).toBe(409);
+
+      const body = (await response.json()) as { message: string };
+      expect(body.message).toBe('User could not be created due to a conflict');
+    });
+
+    it('should return 500 for unexpected errors', async () => {
+      mockUsersService.create.mockRejectedValueOnce(
+        new Error('connection lost'),
+      );
+
+      const response = await app.handle(
+        new Request('http://localhost/users', {
+          method: 'POST',
+          headers: { 'Content-Type': 'application/json' },
+          body: JSON.stringify({
+            name: 'John',
+            surname: 'Doe',
+            email: 'test@example.com',
+          }),
+        }),
+      );
+      expect(response.status).toBe(500);
     });
   });
 
   describe('GET /users', () => {
     it('should get all users successfully', async () => {
-      const response = await users.handle(
-        new Request('http://localhost/users'),
-      );
+      const response = await app.handle(new Request('http://localhost/users'));
       expect(response.status).toBe(200);
 
-      const responseData = (await response.json()) as UsersModel.getResponse;
+      const responseData = (await response.json()) as {
+        users: unknown[];
+        total: number;
+      };
       expect(responseData).toHaveProperty('users');
       expect(responseData).toHaveProperty('total');
       expect(Array.isArray(responseData.users)).toBe(true);
       expect(typeof responseData.total).toBe('number');
 
+      expect(mockUsersService.get).toHaveBeenCalled();
+    });
+
+    it('should return 500 when fetching users fails', async () => {
+      mockUsersService.get.mockRejectedValueOnce(new Error('connection lost'));
+
+      const response = await app.handle(new Request('http://localhost/users'));
+      expect(response.status).toBe(500);
       expect(mockUsersService.get).toHaveBeenCalled();
     });
   });

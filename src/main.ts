@@ -1,10 +1,12 @@
 import cors from '@elysiajs/cors';
 import openapi from '@elysiajs/openapi';
 import { Elysia } from 'elysia';
+import packageJson from '../package.json';
 import config from './common/config';
 import { log } from './common/logger';
 import { migrateDb } from './db';
 import { errorHandler } from './middleware/error-handler';
+import { health } from './modules/health';
 import { users } from './modules/users';
 import { gracefulShutdown } from './util/graceful-shutdown';
 
@@ -16,8 +18,8 @@ const app = new Elysia()
       documentation: {
         info: {
           title: 'Elysia Boilerplate',
-          version: '0.1.5',
-          description: 'A simple boilerplate service for Elysia',
+          version: packageJson.version,
+          description: 'A boilerplate service for Elysia',
         },
         servers: [
           {
@@ -29,6 +31,7 @@ const app = new Elysia()
       enabled: config.ENABLE_OPENAPI,
     }),
   )
+  .use(health)
   .use(users);
 
 /**
@@ -42,18 +45,21 @@ async function bootstrap(): Promise<void> {
   }
 
   // Start the server only after all initialization is complete
-  app.listen(config.SERVER_PORT, ({ development, hostname, port }) => {
-    log.info(
-      `🦊 Elysia is running at http://${hostname}:${port} ${development ? '🚧 in development mode!🚧' : ''}`,
-    );
-    if (config.ENABLE_OPENAPI) {
+  app.listen(
+    { port: config.SERVER_PORT, hostname: config.SERVER_HOSTNAME },
+    ({ development, hostname, port }) => {
       log.info(
-        `📚 OpenAPI documentation is available at http://${hostname}:${port}/openapi`,
+        { hostname, port, development },
+        `Elysia is running at http://${hostname}:${port}`,
       );
-    } else {
-      log.info('📚 OpenAPI documentation is disabled');
-    }
-  });
+      if (config.ENABLE_OPENAPI) {
+        log.info(
+          { url: `http://${hostname}:${port}/openapi` },
+          'OpenAPI documentation available',
+        );
+      }
+    },
+  );
 
   process.once('SIGINT', () => gracefulShutdown(app, 'SIGINT'));
   process.once('SIGTERM', () => gracefulShutdown(app, 'SIGTERM'));

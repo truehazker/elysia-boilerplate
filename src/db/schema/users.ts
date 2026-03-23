@@ -13,7 +13,7 @@ export const users = pgTable('users', {
     .$defaultFn(() => Bun.randomUUIDv7()),
   name: varchar('name', { length: 255 }).notNull(),
   surname: varchar('surname', { length: 255 }).notNull(),
-  email: varchar('email', { length: 255 }).notNull(),
+  email: varchar('email', { length: 255 }).notNull().unique(),
   createdAt: timestamp('created_at').notNull().defaultNow(),
   updatedAt: timestamp('updated_at').notNull().defaultNow(),
 });
@@ -26,7 +26,12 @@ const fieldRefinements = {
     maxLength: 255,
     examples: ['User Surname'],
   }),
-  email: t.String({ minLength: 1, maxLength: 255, examples: ['User Email'] }),
+  email: t.String({
+    minLength: 1,
+    maxLength: 255,
+    format: 'email',
+    examples: ['user@example.com'],
+  }),
 };
 
 // Drizzle-TypeBox schemas (declare variables to avoid infinite type instantiation)
