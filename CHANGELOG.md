@@ -7,6 +7,37 @@ and this project adheres to [Semantic Versioning](https://semver.org/spec/v2.0.0
 
 ## [Unreleased]
 
+## [0.5.0] - 2026-03-23
+
+### Added
+
+- ✨ Health module (`/health` liveness, `/ready` readiness) with `application/health+json` responses per IETF draft
+- ✨ `Dockerfile.migrate` for running database migrations as a separate container
+- ✨ Dedicated migration service in `docker-compose.yml` with dependency ordering
+- ✨ Common `errorResponse` schema helper in `src/common/schema.ts`
+- ✅ Comprehensive test suite for health module
+- ✅ Expanded users test suite with conflict handling and error scenarios
+- 🔧 Type checking (`bun run typecheck`) added to CI lint workflow
+- 🔧 PostgreSQL service container in CI test workflow for integration tests
+- 🔧 Build step added to CI test workflow
+
+### Changed
+
+- ⬆️ Updated Bun base image from `1.3.2` to `1.3.11` in Dockerfiles and CI
+- ⬆️ Updated dependencies and lockfile
+- ♻️ Users service returns `null` on email conflict instead of throwing (`onConflictDoNothing`)
+- ♻️ Users routes simplified — removed redundant try/catch, let errors propagate to global handler
+- ♻️ Error handler registered with `{ as: 'global' }` for full plugin coverage
+- ♻️ OpenAPI version now reads from `package.json` dynamically
+- ♻️ Server `listen()` now binds to configured hostname
+- 🗃️ Email column marked as `unique()` in users schema with email format validation
+- 🐳 Added non-root user (`appuser`) to Dockerfiles for improved security
+- 📝 Overhauled `README.md` and `CLAUDE.md` with updated project structure and guidelines
+
+### Removed
+
+- 🔥 Removed `users.getError` model — unhandled fetch errors propagate to global handler
+
 ## [0.4.5] - 2026-01-03
 
 ### Changed
