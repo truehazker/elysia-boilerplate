@@ -1,8 +1,8 @@
 import { beforeEach, describe, expect, it, mock } from 'bun:test';
 import { Elysia } from 'elysia';
-import { errorHandler } from '../middleware/error-handler';
-import { users } from '../modules/users/index';
-import { UsersService } from '../modules/users/service';
+import { errorHandler } from 'src/middleware/error-handler';
+import { users } from 'src/modules/users/index';
+import { UsersService } from 'src/modules/users/service';
 
 interface User {
   id: string;
@@ -153,6 +153,14 @@ describe('Users Module', () => {
       expect(Array.isArray(responseData.users)).toBe(true);
       expect(typeof responseData.total).toBe('number');
 
+      expect(mockUsersService.get).toHaveBeenCalled();
+    });
+
+    it('should return 500 when fetching users fails', async () => {
+      mockUsersService.get.mockRejectedValueOnce(new Error('connection lost'));
+
+      const response = await app.handle(new Request('http://localhost/users'));
+      expect(response.status).toBe(500);
       expect(mockUsersService.get).toHaveBeenCalled();
     });
   });

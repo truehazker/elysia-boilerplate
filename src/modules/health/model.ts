@@ -15,7 +15,7 @@ const checkEntry = t.Object({
       t.Literal('system'),
     ]),
   ),
-  observedValue: t.Optional(t.Any()),
+  observedValue: t.Optional(t.Unknown()),
   observedUnit: t.Optional(t.String()),
   status: t.Optional(healthStatus),
   affectedEndpoints: t.Optional(t.Array(t.String())),

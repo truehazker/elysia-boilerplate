@@ -7,7 +7,7 @@ WORKDIR /app
 COPY package.json bun.lock ./
 
 # Install dependencies (frozen lockfile for reproducibility)
-RUN bun install --frozen-lockfile
+RUN --mount=type=cache,target=/root/.bun/install/cache bun install --frozen-lockfile
 
 # Copy source files
 COPY src ./src
@@ -23,10 +23,14 @@ FROM frolvlad/alpine-glibc
 # Install only essential C++ runtime libraries (minimal overhead)
 RUN apk --no-cache add libstdc++ libgcc
 
+RUN addgroup -S appgroup && adduser -S appuser -G appgroup
+
 # Copy the compiled binary directly from builder stage
 COPY --from=builder /app/build/server /server
 
-RUN chmod +x /server
+RUN chmod +x /server && chown appuser:appgroup /server
+
+USER appuser
 
 EXPOSE 3000
 

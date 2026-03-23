@@ -1,7 +1,7 @@
 import { Elysia } from 'elysia';
 import { log as logger } from 'src/common/logger';
-import { type HealthModel, healthModelPlugin } from './model';
-import { HealthService } from './service';
+import { type HealthModel, healthModelPlugin } from 'src/modules/health/model';
+import { HealthService } from 'src/modules/health/service';
 
 const log = logger.child({ name: 'health' });
 
@@ -28,7 +28,7 @@ export const health = new Elysia({ tags: ['Health'] })
       const checks = { 'postgres:connectivity': [db] };
 
       if (db.status === 'fail') {
-        log.error({ checks }, 'Readiness check failed');
+        log.warn({ checks }, 'Readiness check failed');
         set.status = 503;
         return {
           status: 'fail',

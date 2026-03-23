@@ -155,7 +155,9 @@ src/
 │   └── logger.ts         # Logger setup
 ├── modules/              # Feature modules
 │   ├── health/           # Health & readiness endpoints
-│   │   └── index.ts      # GET /health, GET /ready
+│   │   ├── index.ts      # GET /health, GET /ready
+│   │   ├── model.ts      # Health response models
+│   │   └── service.ts    # Dependency checks
 │   └── users/            # User module example
 │       ├── index.ts      # Route definitions
 │       ├── model.ts      # Data models
