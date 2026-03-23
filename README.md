@@ -201,7 +201,7 @@ All configuration is centralized in `src/common/config.ts`.
 Once the server is running, you can access the interactive
 API documentation at:
 
-- **Scala UI**: `http://localhost:3000/openapi`
+- **Scalar UI**: `http://localhost:3000/openapi`
 - **OpenAPI JSON**: `http://localhost:3000/openapi/json`
 
 ## Database Management
