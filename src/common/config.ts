@@ -19,6 +19,16 @@ const config = cleanEnv(Bun.env, {
    */
   DB_POOL_MAX: num({ default: 10 }),
   /**
+   * Seconds to wait for a connection to be established before failing.
+   * Bun.SQL `connectionTimeout`.
+   */
+  DB_POOL_CONNECTION_TIMEOUT: num({ default: 5 }),
+  /**
+   * Seconds an idle connection is kept in the pool before being closed.
+   * Bun.SQL `idleTimeout`.
+   */
+  DB_POOL_IDLE_TIMEOUT: num({ default: 30 }),
+  /**
    * Enable automatic database migrations on server startup.
    *
    * ⚠️ CAUTION: Disabled by default for safety.

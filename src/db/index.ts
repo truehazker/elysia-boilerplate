@@ -9,8 +9,8 @@ const db = drizzle({
   connection: {
     url: config.DATABASE_DSN,
     max: config.DB_POOL_MAX,
-    connectionTimeout: 5,
-    idleTimeout: 30,
+    connectionTimeout: config.DB_POOL_CONNECTION_TIMEOUT,
+    idleTimeout: config.DB_POOL_IDLE_TIMEOUT,
   },
   casing: 'snake_case',
 });

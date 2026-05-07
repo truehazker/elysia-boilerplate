@@ -122,8 +122,9 @@ After schema changes, run `bun run db:generate` to create migration.
 - **NEVER** use `process.env` or `Bun.env` directly in application code
 - Always import: `import config from 'src/common/config'`
 - Available config: `NODE_ENV`, `LOG_LEVEL`, `SERVER_HOSTNAME`,
-  `SERVER_PORT`, `DATABASE_DSN`, `DB_POOL_MAX`, `DB_AUTO_MIGRATE`,
-  `ENABLE_OPENAPI`
+  `SERVER_PORT`, `DATABASE_DSN`, `DB_POOL_MAX`,
+  `DB_POOL_CONNECTION_TIMEOUT`, `DB_POOL_IDLE_TIMEOUT`,
+  `DB_AUTO_MIGRATE`, `ENABLE_OPENAPI`
 - `.env.test` ships in the repo with placeholder values. Bun
   auto-loads it whenever `NODE_ENV=test` (which `bun test` sets
   automatically), so unit tests don't need any externally-provided

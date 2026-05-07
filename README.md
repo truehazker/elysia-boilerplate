@@ -248,6 +248,8 @@ All configuration is centralized in `src/common/config.ts`.
 | `SERVER_PORT` | number | `3000` | Server port |
 | `DATABASE_DSN` | string | *(required)* | PostgreSQL connection string (DSN) |
 | `DB_POOL_MAX` | number | `10` | Maximum DB connections in the Drizzle/Bun.SQL pool |
+| `DB_POOL_CONNECTION_TIMEOUT` | number | `5` | Seconds to wait for a connection before failing |
+| `DB_POOL_IDLE_TIMEOUT` | number | `30` | Seconds an idle connection is kept in the pool |
 | `DB_AUTO_MIGRATE` | boolean | `false` | Run migrations on startup |
 | `ENABLE_OPENAPI` | boolean | `true` | Enable OpenAPI docs at `/openapi` |
 

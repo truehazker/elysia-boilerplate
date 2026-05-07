@@ -7,6 +7,23 @@ and this project adheres to [Semantic Versioning](https://semver.org/spec/v2.0.0
 
 ## [Unreleased]
 
+### Added
+
+- ✨ Tier-based test layout (`tests/unit`, `tests/int`, `tests/e2e`) — each tier runnable in isolation with its own preload/env/timeout
+- ✨ Testcontainers-driven integration tier: shared `postgres:16-alpine` container, applied migrations, `resetDatabase()` helper for per-test isolation
+- ✨ `DB_POOL_MAX` env var — configurable max connections in the Drizzle/Bun.SQL pool (was hardcoded `10`)
+- ✨ `DB_POOL_CONNECTION_TIMEOUT` env var — seconds to wait for a connection before failing (was hardcoded `5`)
+- ✨ `DB_POOL_IDLE_TIMEOUT` env var — seconds an idle connection is kept in the pool (was hardcoded `30`)
+
+### Changed
+
+- ♻️ `bunfig.toml` `[test].root = "tests/unit"` so default `bun test` runs only the unit tier
+- ♻️ New scripts: `test:unit` (alias of `test`) and `test:int` (preloads testcontainer setup against `./tests/int`)
+
+### Migration notes
+
+- Existing deployments need no change — all new env vars default to the previous hardcoded values.
+
 ## [0.6.0] - 2026-05-06
 
 ### Changed
