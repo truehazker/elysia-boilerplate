@@ -22,7 +22,7 @@
     "format": "biome format --write .",
     "typecheck": "tsc --noEmit",
     "test": "bun test",
-    "test:unit": "bun test",
+    "test:unit": "bun test ./tests/unit",
     "test:int": "bun test --preload ./tests/int/setup.ts ./tests/int"
   },
   "main": "src/main.ts",
