@@ -7,6 +7,30 @@ and this project adheres to [Semantic Versioning](https://semver.org/spec/v2.0.0
 
 ## [Unreleased]
 
+## [0.6.0] - 2026-05-06
+
+### Changed
+
+- ⬆️ **BREAKING:** Migrated official Elysia plugins from `@elysiajs/*` to `@elysia/*` scope (`cors`, `openapi`)
+- ⬆️ **BREAKING:** Swapped database driver from `pg` (node-postgres) to `Bun.sql` via `drizzle-orm/bun-sql` — drops `pg` and `@types/pg`, uses Bun's native PostgreSQL client
+- ⬆️ **BREAKING:** Renamed `DATABASE_URL` env var to `DATABASE_DSN` (it's a connection DSN, not a URL endpoint) — update `.env`, deploy configs, and CI secrets accordingly
+- ⬆️ Bumped TypeScript `5.9` → `6.0` (replaced deprecated `baseUrl` with `paths` in `tsconfig.json`)
+- ⬆️ Bumped `@biomejs/biome` `2.4.8` → `2.4.14`
+- ⬆️ Bumped `@elysia/cors` to `1.4.2`, `@elysia/openapi` to `1.4.15`, `drizzle-orm` to `0.45.2`, `@types/bun` to `1.3.13`
+- ♻️ Pino logger: ISO timestamps in production JSON output, simpler `transport.target` config in dev, secret redaction defaults (`password`, `token`, `authorization`, `cookie`)
+- ♻️ Renamed startup-log `hostname` field to `host` to avoid colliding with pino's default `base.hostname`
+- ♻️ Pool options renamed for `Bun.sql`: `connectionTimeoutMillis` → `connectionTimeout` (seconds), added `idleTimeout` (seconds); `statement_timeout` removed (set via `DATABASE_DSN` query string if needed)
+
+### Removed
+
+- 🔥 `pg` and `@types/pg` dependencies — replaced by `Bun.sql`
+
+### Migration notes
+
+- If you set custom pg pool options via env or fork, port them to `Bun.SQL` equivalents (seconds, not ms).
+- For per-statement timeout, append `?options=-c%20statement_timeout%3D5000` to `DATABASE_DSN`.
+- Compiled binaries (`bun build --compile`) must run with `NODE_ENV=production` to bypass the pino-pretty worker thread (worker dynamic-require is unsupported in compiled mode).
+
 ## [0.5.0] - 2026-03-23
 
 ### Added
