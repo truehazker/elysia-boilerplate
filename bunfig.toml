@@ -1,4 +1,7 @@
 telemetry = false
 
 [test]
-root = "src/tests"
+# Default `bun test` runs only the unit tier (no Docker required).
+# Integration and e2e tiers are opt-in via the `test:int` / `test:e2e`
+# package scripts, which pass explicit paths and (for int) a preload.
+root = "tests/unit"

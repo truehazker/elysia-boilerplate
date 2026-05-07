@@ -1,6 +1,6 @@
 {
   "name": "elysia-boilerplate",
-  "version": "0.5.0",
+  "version": "0.6.0",
   "description": "A modern boilerplate for building APIs with Elysia, Bun runtime, and PostgreSQL.",
   "author": "Truehazker",
   "license": "MIT",
@@ -20,25 +20,28 @@
     "lint": "biome check .",
     "lint:fix": "biome check . --write",
     "format": "biome format --write .",
-    "typecheck": "tsc --noEmit"
+    "typecheck": "tsc --noEmit",
+    "test": "bun test",
+    "test:unit": "bun test",
+    "test:int": "bun test --preload ./tests/int/setup.ts ./tests/int"
   },
   "main": "src/main.ts",
   "dependencies": {
-    "@elysiajs/cors": "^1.4.1",
-    "@elysiajs/openapi": "^1.4.14",
-    "drizzle-orm": "^0.45.1",
+    "@elysia/cors": "^1.4.2",
+    "@elysia/openapi": "^1.4.15",
+    "drizzle-orm": "^0.45.2",
     "drizzle-typebox": "^0.3.3",
     "elysia": "^1.4.28",
     "envalid": "^8.1.1",
-    "pg": "^8.20.0",
     "pino": "^10.3.1"
   },
   "devDependencies": {
-    "@biomejs/biome": "2.4.8",
-    "@types/bun": "^1.3.11",
-    "@types/pg": "^8.20.0",
+    "@biomejs/biome": "^2.4.14",
+    "@testcontainers/postgresql": "^11.14.0",
+    "@types/bun": "^1.3.13",
     "drizzle-kit": "^0.31.10",
     "pino-pretty": "^13.1.3",
-    "typescript": "^5.9.3"
+    "testcontainers": "^11.14.0",
+    "typescript": "^6.0.3"
   }
 }

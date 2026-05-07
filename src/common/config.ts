@@ -1,4 +1,4 @@
-import { bool, cleanEnv, port, str, url } from 'envalid';
+import { bool, cleanEnv, num, port, str, url } from 'envalid';
 
 const config = cleanEnv(Bun.env, {
   NODE_ENV: str({
@@ -11,7 +11,13 @@ const config = cleanEnv(Bun.env, {
   }),
   SERVER_HOSTNAME: str({ default: 'localhost' }),
   SERVER_PORT: port({ default: 3000 }),
-  DATABASE_URL: url(),
+  DATABASE_DSN: url(),
+  /**
+   * Maximum number of connections in the Drizzle/Bun.SQL pool.
+   * Tune per-deployment based on Postgres `max_connections` and the
+   * number of replicas of this service.
+   */
+  DB_POOL_MAX: num({ default: 10 }),
   /**
    * Enable automatic database migrations on server startup.
    *

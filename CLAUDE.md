@@ -25,8 +25,9 @@ bun run lint:fix               # Auto-fix lint issues
 bun run format                 # Format code with Biome
 
 # Testing
-bun test                       # Run all tests
-bun test --coverage            # Run tests with coverage report
+bun test                       # Run unit tests (default; no Docker needed)
+bun test --coverage            # Unit tests with coverage report
+bun run test:int               # Run integration tests against a Postgres testcontainer (requires Docker)
 
 # Docker
 docker-compose up -d           # Start all services (app + postgres)
@@ -121,7 +122,13 @@ After schema changes, run `bun run db:generate` to create migration.
 - **NEVER** use `process.env` or `Bun.env` directly in application code
 - Always import: `import config from 'src/common/config'`
 - Available config: `NODE_ENV`, `LOG_LEVEL`, `SERVER_HOSTNAME`,
-  `SERVER_PORT`, `DATABASE_URL`, `DB_AUTO_MIGRATE`, `ENABLE_OPENAPI`
+  `SERVER_PORT`, `DATABASE_DSN`, `DB_POOL_MAX`, `DB_AUTO_MIGRATE`,
+  `ENABLE_OPENAPI`
+- `.env.test` ships in the repo with placeholder values. Bun
+  auto-loads it whenever `NODE_ENV=test` (which `bun test` sets
+  automatically), so unit tests don't need any externally-provided
+  env. Integration tests overwrite `DATABASE_DSN` from the preload
+  after starting their testcontainer.
 
 ### Error Handling
 
@@ -165,9 +172,103 @@ If bootstrap fails, app logs fatal error and exits with code 1.
 
 ## Testing
 
-- Test files in `src/tests/` named `*.test.ts`
-- Use Bun's built-in test runner
-- All new features require tests
+Tests live under a single `tests/` tree, split into tiers so each tier
+can be configured (and skipped) independently:
+
+```text
+tests/
+├── unit/                       # Fast, mock-everything tests. No Docker.
+│   ├── users/
+│   │   └── users.unit.spec.ts
+│   └── health/
+│       └── health.unit.spec.ts
+├── int/                        # Real Postgres via Testcontainers. Docker required.
+│   ├── setup.ts                # Preload — boots container, exports helpers
+│   ├── users/
+│   │   └── users.int.spec.ts
+│   └── health/
+│       └── health.int.spec.ts
+└── e2e/                        # Reserved for full HTTP/end-to-end tests.
+    └── <feature>.e2e.spec.ts   # Naming: <feature>.e2e.spec.ts (flat layout).
+```
+
+Conventions:
+
+- File names follow `<subject>.<tier>.spec.ts`. `*.spec.ts` is matched
+  by Bun's default discovery.
+- Unit and integration tests group by module (`unit/<module>/...`,
+  `int/<module>/...`). E2E tests are typically cross-module and live
+  flat under `tests/e2e/`.
+- All new features require unit tests at minimum; service code that
+  hits the database should also have an integration test.
+
+### How `bun test` is wired
+
+- `bunfig.toml` sets `[test].root = "tests/unit"`, so the default
+  `bun test` runs only the unit tier — fast, no Docker.
+- `bun run test:int` invokes Bun with `--preload ./tests/int/setup.ts`
+  and the int directory (`./tests/int`) as the test target, so Bun
+  walks it recursively regardless of subfolder depth.
+- `bun run test:e2e` (add when the first e2e test lands) follows the
+  same pattern: explicit directory target, with or without a preload.
+
+Because the tiers run as separate `bun test` invocations, each can
+have its own preload, env vars, timeouts, or other configuration with
+no cross-contamination.
+
+#### Ad hoc runs (running a single spec)
+
+Because `[test].root = "tests/unit"`, paths outside that root must be
+prefixed with `./` so Bun treats them as paths rather than filters:
+
+```bash
+# Single unit spec — works as a filter within bunfig root
+bun test users.unit
+
+# Single integration spec — needs ./ prefix AND the preload
+bun test --preload ./tests/int/setup.ts ./tests/int/users/users.int.spec.ts
+```
+
+For most local work just use the tier scripts (`bun test`, `bun run
+test:int`).
+
+### How the integration preload works
+
+`tests/int/setup.ts` is loaded as a Bun **preload** — it runs before
+any test file is parsed, so it can:
+
+1. Boot a single shared `postgres:16-alpine` container.
+2. Set `process.env.DATABASE_DSN` to the container URI.
+3. Apply Drizzle migrations.
+4. Register cleanup hooks (`afterAll` + `beforeExit`/signals, with a
+   bounded timeout so a hung `container.stop()` can't stall the run).
+
+Because env is set before any test file loads, integration tests use
+**plain static imports** — `import { UsersService } from
+'src/modules/users/service'` works exactly like in unit tests, and
+`src/db` constructs its singleton against the test container.
+
+The setup module also exports:
+
+- `testDb` — the Drizzle handle bound to the container, useful for
+  direct assertions on persisted state.
+- `resetDatabase()` — discovers public-schema tables via `pg_tables`
+  and truncates them with `RESTART IDENTITY CASCADE` (using
+  `sql.identifier` for safe quoting). Call from `beforeEach` for full
+  per-test isolation. Drizzle's bookkeeping in the `drizzle` schema is
+  untouched, so migrations don't re-run.
+
+### Adding a new integration test
+
+1. Create `tests/int/<module>/<subject>.int.spec.ts`.
+2. Static-import services and schema from `src/...` as usual.
+3. The preload registers a global `beforeEach(resetDatabase)`, so each
+   test starts from a clean schema — no per-file boilerplate needed.
+   Import `testDb` from `../setup` if you need to assert directly on
+   persisted state.
+4. The `test:int` script targets the `./tests/int` directory, so Bun
+   walks it recursively — your file is picked up automatically with
+   no script edits.
 
 ## Code Style
 
