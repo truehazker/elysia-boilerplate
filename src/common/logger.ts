@@ -12,6 +12,8 @@ export const log = pino({
     '*.token',
     'authorization',
     '*.authorization',
+    'cookie',
+    '*.cookie',
     'req.headers.authorization',
     'req.headers.cookie',
   ],
