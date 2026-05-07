@@ -1,18 +1,28 @@
 import pino from 'pino';
 import config from './config';
 
+const isDev = config.NODE_ENV === 'development' || config.NODE_ENV === 'test';
+
 export const log = pino({
   level: config.LOG_LEVEL,
-  transport: ['development', 'test'].includes(config.NODE_ENV)
+  redact: [
+    'password',
+    '*.password',
+    'token',
+    '*.token',
+    'authorization',
+    '*.authorization',
+    'cookie',
+    '*.cookie',
+    'req.headers.authorization',
+    'req.headers.cookie',
+  ],
+  ...(isDev
     ? {
-        targets: [
-          {
-            target: 'pino-pretty',
-            options: {
-              colorize: true,
-            },
-          },
-        ],
+        transport: {
+          target: 'pino-pretty',
+          options: { colorize: true, translateTime: 'HH:MM:ss.l' },
+        },
       }
-    : undefined,
+    : { timestamp: pino.stdTimeFunctions.isoTime }),
 });

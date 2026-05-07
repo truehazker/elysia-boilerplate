@@ -1,5 +1,5 @@
-import cors from '@elysiajs/cors';
-import openapi from '@elysiajs/openapi';
+import cors from '@elysia/cors';
+import openapi from '@elysia/openapi';
 import { Elysia } from 'elysia';
 import packageJson from '../package.json';
 import config from './common/config';
@@ -49,7 +49,7 @@ async function bootstrap(): Promise<void> {
     { port: config.SERVER_PORT, hostname: config.SERVER_HOSTNAME },
     ({ development, hostname, port }) => {
       log.info(
-        { hostname, port, development },
+        { host: hostname, port, development },
         `Elysia is running at http://${hostname}:${port}`,
       );
       if (config.ENABLE_OPENAPI) {

@@ -1,4 +1,4 @@
-import { count } from 'drizzle-orm';
+import { asc, count } from 'drizzle-orm';
 import db from '../../db';
 import { users } from '../../db/schema/users';
 import type { UsersModel } from './model';
@@ -29,6 +29,7 @@ export abstract class UsersService {
         email: users.email,
       })
       .from(users)
+      .orderBy(asc(users.createdAt), asc(users.id))
       .limit(params.limit)
       .offset(params.offset);
 

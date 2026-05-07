@@ -55,10 +55,14 @@ It follows a modular architecture with strict TypeScript configuration.
 
 ## Testing Instructions
 
-- **Runner**: Use `bun test`.
-- **Location**: Tests are located in `src/tests/`.
-- **Convention**: Name test files `*.test.ts`.
-- **Requirement**: All new features must include unit/integration tests.
+- **Runner**: Use `bun test` (unit) and `bun run test:int` (integration).
+- **Location**: Tests live under `tests/`, split by tier:
+  - `tests/unit/<module>/<subject>.unit.spec.ts` — fast, mocked
+  - `tests/int/<module>/<subject>.int.spec.ts` — real Postgres via Testcontainers
+  - `tests/e2e/<feature>.e2e.spec.ts` — end-to-end (reserved)
+- **Convention**: `<subject>.<tier>.spec.ts`. Bun discovers `*.spec.ts`.
+- **Integration prerequisite**: Docker (or podman with the docker API).
+- **Requirement**: All new features must include unit tests; service code that hits the DB also needs an integration test.
 - **Coverage**: Run `bun test --coverage` to check coverage.
 
 ## PR Instructions
@@ -74,6 +78,6 @@ It follows a modular architecture with strict TypeScript configuration.
 - `src/common`: Shared configuration and utilities.
 - `src/db`: Database setup, migrations, and schemas.
 - `src/modules`: Business logic modules.
-- `src/tests`: Test files.
 - `src/main.ts`: Application entry point.
+- `tests/unit`, `tests/int`, `tests/e2e`: Test tiers (see Testing Instructions).
 

@@ -1,5 +1,5 @@
-import { drizzle } from 'drizzle-orm/node-postgres';
-import { migrate } from 'drizzle-orm/node-postgres/migrator';
+import { drizzle } from 'drizzle-orm/bun-sql';
+import { migrate } from 'drizzle-orm/bun-sql/migrator';
 import { log as logger } from 'src/common/logger';
 import config from '../common/config';
 
@@ -7,10 +7,10 @@ const log = logger.child({ name: 'db' });
 
 const db = drizzle({
   connection: {
-    connectionString: config.DATABASE_URL,
-    max: 10,
-    connectionTimeoutMillis: 5000,
-    statement_timeout: 5000,
+    url: config.DATABASE_DSN,
+    max: config.DB_POOL_MAX,
+    connectionTimeout: config.DB_POOL_CONNECTION_TIMEOUT,
+    idleTimeout: config.DB_POOL_IDLE_TIMEOUT,
   },
   casing: 'snake_case',
 });

@@ -9,6 +9,6 @@ export default defineConfig({
     prefix: 'timestamp',
   },
   dbCredentials: {
-    url: config.DATABASE_URL,
+    url: config.DATABASE_DSN,
   },
 });

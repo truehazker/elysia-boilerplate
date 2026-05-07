@@ -26,7 +26,7 @@ export async function gracefulShutdown(
 
   try {
     await app.stop();
-    await db.$client.end();
+    await db.$client.close();
     clearTimeout(shutdownTimeout);
     process.exit(0);
   } catch (error) {
