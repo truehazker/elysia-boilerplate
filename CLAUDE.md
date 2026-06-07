@@ -124,7 +124,8 @@ After schema changes, run `bun run db:generate` to create migration.
 - Available config: `NODE_ENV`, `LOG_LEVEL`, `SERVER_HOSTNAME`,
   `SERVER_PORT`, `DATABASE_DSN`, `DB_POOL_MAX`,
   `DB_POOL_CONNECTION_TIMEOUT`, `DB_POOL_IDLE_TIMEOUT`,
-  `DB_AUTO_MIGRATE`, `ENABLE_OPENAPI`
+  `DB_AUTO_MIGRATE`, `ENABLE_OPENAPI`, `OTEL_ENABLED`,
+  `OTEL_SERVICE_NAME`
 - `.env.test` ships in the repo with placeholder values. Bun
   auto-loads it whenever `NODE_ENV=test` (which `bun test` sets
   automatically), so unit tests don't need any externally-provided
@@ -156,6 +157,23 @@ Global error handler in `src/middleware/error-handler.ts`
 3. Register graceful shutdown handlers (SIGINT, SIGTERM)
 
 If bootstrap fails, app logs fatal error and exits with code 1.
+
+### Telemetry
+
+`src/middleware/telemetry.ts` traces requests via `@elysia/opentelemetry`,
+gated by `OTEL_ENABLED` (no-op plugin when off). It owns a traces-only
+`NodeTracerProvider` and registers it so the plugin attaches to it rather than
+starting its own `NodeSDK` (which would also open an unbounded OTLP logs
+pipeline). Service name/version and environment come from `package.json` +
+`NODE_ENV`; the exporter and sampler read the standard `OTEL_EXPORTER_OTLP_*` /
+`OTEL_TRACES_SAMPLER` env vars. `shutdownTelemetry()` runs last in
+`gracefulShutdown` (after the DB pool closes, so a hung collector can't delay
+it) to flush and close the provider.
+
+`@elysia/opentelemetry` and the direct `@opentelemetry/*` deps are pinned to
+exact versions on the `0.200.x` / core-`2.0.0` line — the plugin's transitive
+SDK consumes our objects, so keep them in lockstep to dedupe a single
+`@opentelemetry/core`.
 
 ## Branch Strategy
 

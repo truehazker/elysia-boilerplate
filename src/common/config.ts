@@ -40,6 +40,13 @@ const config = cleanEnv(Bun.env, {
 
   // Enable OpenAPI documentation to be available on /openapi route
   ENABLE_OPENAPI: bool({ default: true }),
+
+  // Enable OpenTelemetry tracing. Exporter and sampler come from the
+  // standard OTEL_EXPORTER_OTLP_* / OTEL_TRACES_SAMPLER env vars.
+  OTEL_ENABLED: bool({ default: false }),
+
+  // Span service.name. Defaults to the package name when empty.
+  OTEL_SERVICE_NAME: str({ default: '' }),
 });
 
 export default config;

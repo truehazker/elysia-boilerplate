@@ -6,11 +6,13 @@ import config from './common/config';
 import { log } from './common/logger';
 import { migrateDb } from './db';
 import { errorHandler } from './middleware/error-handler';
+import { telemetry } from './middleware/telemetry';
 import { health } from './modules/health';
 import { users } from './modules/users';
 import { gracefulShutdown } from './util/graceful-shutdown';
 
 const app = new Elysia()
+  .use(telemetry)
   .use(cors())
   .use(errorHandler)
   .use(
