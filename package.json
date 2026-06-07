@@ -29,6 +29,10 @@
   "dependencies": {
     "@elysia/cors": "^1.4.2",
     "@elysia/openapi": "^1.4.15",
+    "@elysia/opentelemetry": "1.4.12",
+    "@opentelemetry/exporter-trace-otlp-proto": "0.200.0",
+    "@opentelemetry/resources": "2.0.0",
+    "@opentelemetry/sdk-trace-node": "2.0.0",
     "drizzle-orm": "^0.45.2",
     "drizzle-typebox": "^0.3.3",
     "elysia": "^1.4.28",
