@@ -3,8 +3,8 @@ import { app } from 'src/app';
 
 // Full-stack e2e: drives the real app (routing, validation, error handler,
 // service, DB) via app.handle against the Postgres testcontainer booted by
-// the integration preload. The preload's beforeEach(resetDatabase) gives each
-// test a clean schema, so cases stay independent of order.
+// the shared preload (tests/support/setup.ts). Its beforeEach(resetDatabase)
+// gives each test a clean schema, so cases stay independent of order.
 
 const post = (body: unknown) =>
   app.handle(

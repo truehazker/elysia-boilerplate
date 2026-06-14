@@ -198,13 +198,14 @@ can be configured (and skipped) independently:
 
 ```text
 tests/
+├── support/                    # Shared helpers (not a test tier).
+│   └── setup.ts                # Preload — boots container, exports helpers
 ├── unit/                       # Fast, mock-everything tests. No Docker.
 │   ├── users/
 │   │   └── users.unit.spec.ts
 │   └── health/
 │       └── health.unit.spec.ts
 ├── int/                        # Real Postgres via Testcontainers. Docker required.
-│   ├── setup.ts                # Preload — boots container, exports helpers
 │   ├── users/
 │   │   └── users.int.spec.ts
 │   └── health/
@@ -227,11 +228,11 @@ Conventions:
 
 - `bunfig.toml` sets `[test].root = "tests/unit"`, so the default
   `bun test` runs only the unit tier — fast, no Docker.
-- `bun run test:int` invokes Bun with `--preload ./tests/int/setup.ts`
+- `bun run test:int` invokes Bun with `--preload ./tests/support/setup.ts`
   and the int directory (`./tests/int`) as the test target, so Bun
   walks it recursively regardless of subfolder depth.
-- `bun run test:e2e` follows the same pattern: it reuses the integration
-  preload (`./tests/int/setup.ts`) and targets `./tests/e2e`. Specs boot
+- `bun run test:e2e` follows the same pattern: it uses the shared
+  preload (`./tests/support/setup.ts`) and targets `./tests/e2e`. Specs boot
   the real app via `import { app } from 'src/app'` and drive it with
   `app.handle()`; `beforeEach(resetDatabase)` keeps cases independent.
 
@@ -249,15 +250,15 @@ prefixed with `./` so Bun treats them as paths rather than filters:
 bun test users.unit
 
 # Single integration spec — needs ./ prefix AND the preload
-bun test --preload ./tests/int/setup.ts ./tests/int/users/users.int.spec.ts
+bun test --preload ./tests/support/setup.ts ./tests/int/users/users.int.spec.ts
 ```
 
 For most local work just use the tier scripts (`bun test`, `bun run
 test:int`).
 
-### How the integration preload works
+### How the shared test preload works
 
-`tests/int/setup.ts` is loaded as a Bun **preload** — it runs before
+`tests/support/setup.ts` is loaded as a Bun **preload** — it runs before
 any test file is parsed, so it can:
 
 1. Boot a single shared `postgres:16-alpine` container.
@@ -287,8 +288,8 @@ The setup module also exports:
 2. Static-import services and schema from `src/...` as usual.
 3. The preload registers a global `beforeEach(resetDatabase)`, so each
    test starts from a clean schema — no per-file boilerplate needed.
-   Import `testDb` from `../setup` if you need to assert directly on
-   persisted state.
+   Import `testDb` from `../../support/setup` if you need to assert
+   directly on persisted state.
 4. The `test:int` script targets the `./tests/int` directory, so Bun
    walks it recursively — your file is picked up automatically with
    no script edits.
