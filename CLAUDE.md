@@ -28,6 +28,7 @@ bun run format                 # Format code with Biome
 bun test                       # Run unit tests (default; no Docker needed)
 bun test --coverage            # Unit tests with coverage report
 bun run test:int               # Run integration tests against a Postgres testcontainer (requires Docker)
+bun run test:e2e               # Run full-stack e2e tests against a Postgres testcontainer (requires Docker)
 
 # Docker
 docker-compose up -d           # Start all services (app + postgres)
@@ -40,8 +41,9 @@ docker-compose down            # Stop all services
 
 ### Request Flow
 
-1. Request enters through `src/main.ts` (root Elysia app)
-2. Global middleware applied: CORS, error handling, OpenAPI
+1. Root Elysia app is composed in `src/app.ts`; `src/main.ts` boots it
+   (migrations, `listen`, graceful shutdown)
+2. Global middleware applied: telemetry, CORS, error handling, OpenAPI
 3. Routed to module in `src/modules/` (e.g., `/users` -> `src/modules/users/`)
 4. Module structure: `index.ts` (routes) -> `service.ts` (business logic) -> database
 
@@ -207,8 +209,8 @@ tests/
 │   │   └── users.int.spec.ts
 │   └── health/
 │       └── health.int.spec.ts
-└── e2e/                        # Reserved for full HTTP/end-to-end tests.
-    └── <feature>.e2e.spec.ts   # Naming: <feature>.e2e.spec.ts (flat layout).
+└── e2e/                        # Full HTTP/end-to-end tests. Docker required.
+    └── users.e2e.spec.ts       # Naming: <feature>.e2e.spec.ts (flat layout).
 ```
 
 Conventions:
@@ -228,8 +230,10 @@ Conventions:
 - `bun run test:int` invokes Bun with `--preload ./tests/int/setup.ts`
   and the int directory (`./tests/int`) as the test target, so Bun
   walks it recursively regardless of subfolder depth.
-- `bun run test:e2e` (add when the first e2e test lands) follows the
-  same pattern: explicit directory target, with or without a preload.
+- `bun run test:e2e` follows the same pattern: it reuses the integration
+  preload (`./tests/int/setup.ts`) and targets `./tests/e2e`. Specs boot
+  the real app via `import { app } from 'src/app'` and drive it with
+  `app.handle()`; `beforeEach(resetDatabase)` keeps cases independent.
 
 Because the tiers run as separate `bun test` invocations, each can
 have its own preload, env vars, timeouts, or other configuration with
