@@ -1,4 +1,14 @@
-import { bool, cleanEnv, num, port, str, url } from 'envalid';
+import { bool, cleanEnv, makeValidator, num, port, str, url } from 'envalid';
+
+// Positive safe integer — rejects zero/negative/fractional/Infinity, which
+// would silently break the limiter (fail-closed) or the body cap.
+const posInt = makeValidator<number>((input) => {
+  const n = Number(input);
+  if (!Number.isSafeInteger(n) || n < 1) {
+    throw new Error('Expected a positive integer');
+  }
+  return n;
+});
 
 const config = cleanEnv(Bun.env, {
   NODE_ENV: str({
@@ -53,6 +63,15 @@ const config = cleanEnv(Bun.env, {
 
   // Fraction of traces to sample, 0.0–1.0. Lower in production to control cost.
   OTEL_TRACES_SAMPLE_RATIO: num({ default: 1.0 }),
+
+  // Max requests allowed per IP within RATE_LIMIT_WINDOW before 429s.
+  RATE_LIMIT_MAX: posInt({ default: 100 }),
+  // Rate-limit window length, in seconds.
+  RATE_LIMIT_WINDOW: posInt({ default: 60 }),
+
+  // Max request body size in bytes; larger payloads are rejected with 413
+  // by Bun before they buffer into memory. Defaults to 1 MiB.
+  MAX_BODY_SIZE: posInt({ default: 1024 * 1024 }),
 });
 
 export default config;
