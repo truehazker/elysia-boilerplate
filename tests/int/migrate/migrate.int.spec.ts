@@ -7,6 +7,7 @@ describe('Database migrations (integration)', () => {
   // Call migrateDb() directly — the `migrate` command would close the shared pool.
   it('re-running against a migrated database succeeds (idempotent)', async () => {
     expect(await migrateDb()).toBeUndefined();
+    expect(await migrateDb()).toBeUndefined();
   });
 
   it('has applied the users table schema', async () => {
