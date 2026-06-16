@@ -1,6 +1,7 @@
 import cors from '@elysia/cors';
 import openapi from '@elysia/openapi';
 import { Elysia } from 'elysia';
+import { rateLimit } from 'elysia-rate-limit';
 import packageJson from '../package.json';
 import config from './common/config';
 import { errorHandler } from './middleware/error-handler';
@@ -15,10 +16,18 @@ import { users } from './modules/users';
  * bootstrap/listen) so tests can boot the real app via `app.handle()`
  * without starting an HTTP server.
  */
-export const app = new Elysia()
+export const app = new Elysia({
+  serve: { maxRequestBodySize: config.MAX_BODY_SIZE },
+})
   .use(telemetry)
   .use(requestId)
   .use(cors())
+  .use(
+    rateLimit({
+      max: config.RATE_LIMIT_MAX,
+      duration: config.RATE_LIMIT_WINDOW * 1000,
+    }),
+  )
   .use(errorHandler)
   .use(
     openapi({
