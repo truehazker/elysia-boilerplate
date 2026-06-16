@@ -23,7 +23,8 @@
     "typecheck": "tsc --noEmit",
     "test": "bun test",
     "test:unit": "bun test ./tests/unit",
-    "test:int": "bun test --preload ./tests/int/setup.ts ./tests/int"
+    "test:int": "bun test --preload ./tests/support/setup.ts ./tests/int",
+    "test:e2e": "bun test --preload ./tests/support/setup.ts ./tests/e2e"
   },
   "main": "src/main.ts",
   "dependencies": {

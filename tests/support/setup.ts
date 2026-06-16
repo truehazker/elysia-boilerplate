@@ -1,15 +1,8 @@
 /**
- * Integration test preload — runs once before any integration test file.
- *
- * Boots a single Postgres testcontainer, applies all Drizzle migrations,
- * and sets `DATABASE_DSN` BEFORE any application module is imported.
- * Test files can then use plain static imports (`import { UsersService }
- * from 'src/modules/users/service'`); by the time those modules load,
- * `src/db` constructs its singleton against the test container.
- *
- * Loaded via `bun test --preload <this-file>`. The `test:int` package
- * script wires this up. The preload also registers a global
- * `beforeEach(resetDatabase)` hook so individual specs don't have to.
+ * Shared test preload (int + e2e). Boots one Postgres testcontainer, runs
+ * migrations, and sets DATABASE_DSN before any app module loads — so specs can
+ * use plain static imports. Also registers a global beforeEach(resetDatabase).
+ * Wired via the test:int / test:e2e scripts (`bun test --preload`).
  */
 
 import { afterAll, beforeEach } from 'bun:test';

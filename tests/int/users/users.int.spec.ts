@@ -1,7 +1,7 @@
 import { describe, expect, it } from 'bun:test';
 import { users as usersTable } from 'src/db/schema/users';
 import { UsersService } from 'src/modules/users/service';
-import { testDb } from '../setup';
+import { testDb } from '../../support/setup';
 
 describe('UsersService (integration)', () => {
   describe('create', () => {

@@ -14,11 +14,13 @@ and this project adheres to [Semantic Versioning](https://semver.org/spec/v2.0.0
 - ✨ `DB_POOL_MAX` env var — configurable max connections in the Drizzle/Bun.SQL pool (was hardcoded `10`)
 - ✨ `DB_POOL_CONNECTION_TIMEOUT` env var — seconds to wait for a connection before failing (was hardcoded `5`)
 - ✨ `DB_POOL_IDLE_TIMEOUT` env var — seconds an idle connection is kept in the pool (was hardcoded `30`)
+- ✅ Full-stack e2e test tier (`tests/e2e/users.e2e.spec.ts`) — boots the real app over the integration testcontainer and drives routes via `app.handle()`, with a `test:e2e` script and CI job
 
 ### Changed
 
 - ♻️ `bunfig.toml` `[test].root = "tests/unit"` so default `bun test` runs only the unit tier
-- ♻️ New scripts: `test:unit` (alias of `test`) and `test:int` (preloads testcontainer setup against `./tests/int`)
+- ♻️ New scripts: `test:unit` (alias of `test`), `test:int` (preloads testcontainer setup against `./tests/int`), and `test:e2e` (same preload against `./tests/e2e`)
+- ♻️ Extracted the Elysia app into `src/app.ts` (`main.ts` now only bootstraps/listens) so tests can boot the real app without starting a server
 
 ### Migration notes
 

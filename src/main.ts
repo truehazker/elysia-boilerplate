@@ -1,40 +1,8 @@
-import cors from '@elysia/cors';
-import openapi from '@elysia/openapi';
-import { Elysia } from 'elysia';
-import packageJson from '../package.json';
+import { app } from './app';
 import config from './common/config';
 import { log } from './common/logger';
 import { migrateDb } from './db';
-import { errorHandler } from './middleware/error-handler';
-import { telemetry } from './middleware/telemetry';
-import { health } from './modules/health';
-import { users } from './modules/users';
 import { gracefulShutdown } from './util/graceful-shutdown';
-
-const app = new Elysia()
-  .use(telemetry)
-  .use(cors())
-  .use(errorHandler)
-  .use(
-    openapi({
-      documentation: {
-        info: {
-          title: 'Elysia Boilerplate',
-          version: packageJson.version,
-          description: 'A boilerplate service for Elysia',
-        },
-        servers: [
-          {
-            url: `http://${config.SERVER_HOSTNAME}:${config.SERVER_PORT}`,
-            description: 'Local development server',
-          },
-        ],
-      },
-      enabled: config.ENABLE_OPENAPI,
-    }),
-  )
-  .use(health)
-  .use(users);
 
 /**
  * Bootstrap the application.
@@ -72,4 +40,4 @@ bootstrap().catch((error) => {
   process.exit(1);
 });
 
-export type App = typeof app;
+export type { App } from './app';
