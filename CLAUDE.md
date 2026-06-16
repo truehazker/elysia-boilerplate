@@ -44,7 +44,7 @@ docker-compose down            # Stop all services
 1. Root Elysia app is composed in `src/app.ts`; the `serve` command
    (`src/commands/serve.ts`), dispatched from the CLI entrypoint
    `src/cli.ts`, boots it (`listen`, graceful shutdown)
-2. Global middleware applied: telemetry, CORS, error handling, OpenAPI
+2. Global middleware applied: telemetry, request-ID, CORS, error handling, OpenAPI
 3. Routed to module in `src/modules/` (e.g., `/users` -> `src/modules/users/`)
 4. Module structure: `index.ts` (routes) -> `service.ts` (business logic) -> database
 
@@ -62,6 +62,31 @@ Example from `src/modules/users/index.ts`:
 import { log as logger } from 'src/common/logger';
 const log = logger.child({ name: 'users' });
 ```
+
+Every log line is automatically tagged with the in-flight request's
+correlation ID (`requestId`) and — when telemetry is enabled — its
+`traceId`/`spanId`, via a pino `mixin` in `src/common/logger`. You do
+**not** thread these through service calls; just log as usual.
+
+### Correlation / Request IDs
+
+`src/middleware/request-id.ts` gives every request a correlation ID so a
+log line can be tied to a single request, even across services:
+
+- On each request it reuses a valid inbound `x-request-id` header (so one
+  ID can span services) or mints a fresh UUIDv7. Inbound IDs are sanitized
+  (short, printable charset) to prevent log/span injection.
+- The ID is bound to an `AsyncLocalStorage` store (`enterWith` in
+  `onRequest`, the idiomatic Elysia pattern) and read at log time by the
+  logger mixin. Use `getRequestId()` to read it anywhere in the request's
+  async context.
+- It is echoed back on the `x-request-id` response header and recorded as
+  the `request.id` span attribute, so logs ↔ traces share one correlation
+  key. Cross-service trace propagation itself still rides on the W3C
+  `traceparent` header handled by OpenTelemetry.
+
+Registered right after `telemetry` in `src/app.ts` so the active span
+exists when the attribute is set.
 
 ### Module Pattern
 
@@ -128,7 +153,7 @@ After schema changes, run `bun run db:generate` to create migration.
   `SERVER_PORT`, `DATABASE_DSN`, `DB_POOL_MAX`,
   `DB_POOL_CONNECTION_TIMEOUT`, `DB_POOL_IDLE_TIMEOUT`,
   `DB_AUTO_MIGRATE`, `MIGRATIONS_DIR`, `ENABLE_OPENAPI`,
-  `OTEL_ENABLED`, `OTEL_SERVICE_NAME`
+  `OTEL_ENABLED`, `OTEL_SERVICE_NAME`, `OTEL_TRACES_SAMPLE_RATIO`
 - `.env.test` ships in the repo with placeholder values. Bun
   auto-loads it whenever `NODE_ENV=test` (which `bun test` sets
   automatically), so unit tests don't need any externally-provided
@@ -191,8 +216,12 @@ gated by `OTEL_ENABLED` (no-op plugin when off). It owns a traces-only
 `NodeTracerProvider` and registers it so the plugin attaches to it rather than
 starting its own `NodeSDK` (which would also open an unbounded OTLP logs
 pipeline). Service name/version and environment come from `package.json` +
-`NODE_ENV`; the exporter and sampler read the standard `OTEL_EXPORTER_OTLP_*` /
-`OTEL_TRACES_SAMPLER` env vars. `shutdownTelemetry()` runs last in
+`NODE_ENV`; the exporter reads the standard `OTEL_EXPORTER_OTLP_*` env vars.
+Sampling is an explicit `ParentBasedSampler(TraceIdRatioBased)` driven by
+`OTEL_TRACES_SAMPLE_RATIO` (defaults to all traces — lower it in production).
+OTel's internal diagnostics (e.g. failed exports) are bridged into pino at WARN
+so a misconfigured collector surfaces in the logs instead of dropping spans
+silently. `shutdownTelemetry()` runs last in
 `gracefulShutdown` (after the DB pool closes, so a hung collector can't delay
 it) to flush and close the provider.
 
