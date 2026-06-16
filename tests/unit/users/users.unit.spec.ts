@@ -30,7 +30,7 @@ const mockUsersService = {
           email: 'john.doe@example.com',
         },
       ],
-      total: 1,
+      nextCursor: null,
     }),
   ),
 };
@@ -146,12 +146,11 @@ describe('Users Module', () => {
 
       const responseData = (await response.json()) as {
         users: unknown[];
-        total: number;
+        nextCursor: string | null;
       };
       expect(responseData).toHaveProperty('users');
-      expect(responseData).toHaveProperty('total');
+      expect(responseData).toHaveProperty('nextCursor');
       expect(Array.isArray(responseData.users)).toBe(true);
-      expect(typeof responseData.total).toBe('number');
 
       expect(mockUsersService.get).toHaveBeenCalled();
     });

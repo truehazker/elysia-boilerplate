@@ -35,7 +35,7 @@ export const users = new Elysia({ prefix: '/users', tags: ['Users'] })
     '/',
     async ({ query }): Promise<UsersModel.getResponse> => {
       const users = await UsersService.get(query);
-      log.info(`Got users ${users.total}`);
+      log.info(`Got ${users.users.length} users`);
       return users;
     },
     {

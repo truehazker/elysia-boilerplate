@@ -32,11 +32,11 @@ describe('Users routes (e2e)', () => {
     const list = await app.handle(new Request('http://localhost/users'));
     expect(list.status).toBe(200);
     const body = (await list.json()) as {
-      total: number;
+      nextCursor: string | null;
       users: { email: string }[];
     };
-    expect(body.total).toBe(1);
     expect(body.users[0]?.email).toBe('ada@example.com');
+    expect(body.nextCursor).toBeNull();
   });
 
   it('rejects a duplicate email with 409', async () => {
