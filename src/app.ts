@@ -4,6 +4,7 @@ import { Elysia } from 'elysia';
 import packageJson from '../package.json';
 import config from './common/config';
 import { errorHandler } from './middleware/error-handler';
+import { requestId } from './middleware/request-id';
 import { telemetry } from './middleware/telemetry';
 import { health } from './modules/health';
 import { users } from './modules/users';
@@ -16,6 +17,7 @@ import { users } from './modules/users';
  */
 export const app = new Elysia()
   .use(telemetry)
+  .use(requestId)
   .use(cors())
   .use(errorHandler)
   .use(

@@ -8,6 +8,7 @@
         "@elysia/cors": "^1.4.2",
         "@elysia/openapi": "^1.4.15",
         "@elysia/opentelemetry": "1.4.12",
+        "@opentelemetry/api": "1.9.1",
         "@opentelemetry/exporter-trace-otlp-proto": "0.200.0",
         "@opentelemetry/resources": "2.0.0",
         "@opentelemetry/sdk-trace-node": "2.0.0",
