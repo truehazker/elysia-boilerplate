@@ -74,8 +74,9 @@ correlation ID (`requestId`) and — when telemetry is enabled — its
 log line can be tied to a single request, even across services:
 
 - On each request it reuses a valid inbound `x-request-id` header (so one
-  ID can span services) or mints a fresh UUIDv7. Inbound IDs are sanitized
-  (short, printable charset) to prevent log/span injection.
+  ID can span services) or mints a fresh UUIDv7. Inbound IDs are length-capped;
+  HTTP already forbids control characters in header values, so a length cap is
+  enough to keep logs and spans from being bloated or injected.
 - The ID is bound to an `AsyncLocalStorage` store (`enterWith` in
   `onRequest`, the idiomatic Elysia pattern) and read at log time by the
   logger mixin. Use `getRequestId()` to read it anywhere in the request's
