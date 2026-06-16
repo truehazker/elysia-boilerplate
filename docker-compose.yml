@@ -20,9 +20,12 @@ services:
   elysia-boilerplate-migrate:
     build:
       context: .
-      dockerfile: Dockerfile.migrate
+      dockerfile: Dockerfile
+    # Same image as the app — run the one-shot migration command and exit.
+    command: ["/app/server", "migrate"]
     environment:
       DATABASE_DSN: ${DATABASE_DSN:-postgresql://postgres:postgres@elysia-boilerplate-postgres:5432/elysia-boilerplate}
+    restart: "no"
     depends_on:
       elysia-boilerplate-postgres:
         condition: service_healthy

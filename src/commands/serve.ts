@@ -1,14 +1,16 @@
-import { app } from './app';
-import config from './common/config';
-import { log } from './common/logger';
-import { migrateDb } from './db';
-import { gracefulShutdown } from './util/graceful-shutdown';
+import { app } from 'src/app';
+import config from 'src/common/config';
+import { log as logger } from 'src/common/logger';
+import { migrateDb } from 'src/db';
+import { gracefulShutdown } from 'src/util/graceful-shutdown';
+
+const log = logger.child({ name: 'serve' });
 
 /**
- * Bootstrap the application.
- * Runs all initialization tasks before starting the server.
+ * Long-lived HTTP server. `DB_AUTO_MIGRATE` is a dev-only convenience — use
+ * the `migrate` command in deployments (Drizzle's `migrate()` has no lock).
  */
-async function bootstrap(): Promise<void> {
+export async function serve(): Promise<void> {
   // Run database migrations before accepting any requests
   if (config.DB_AUTO_MIGRATE) {
     await migrateDb();
@@ -34,10 +36,3 @@ async function bootstrap(): Promise<void> {
   process.once('SIGINT', () => gracefulShutdown(app, 'SIGINT'));
   process.once('SIGTERM', () => gracefulShutdown(app, 'SIGTERM'));
 }
-
-bootstrap().catch((error) => {
-  log.fatal({ err: error }, 'Failed to start application');
-  process.exit(1);
-});
-
-export type { App } from './app';

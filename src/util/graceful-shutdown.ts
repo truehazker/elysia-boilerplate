@@ -1,6 +1,6 @@
+import type { App } from 'src/app';
 import { log as logger } from 'src/common/logger';
 import db from 'src/db';
-import type { App } from 'src/main';
 import { shutdownTelemetry } from 'src/middleware/telemetry';
 
 const log = logger.child({ name: 'graceful-shutdown' });

@@ -15,23 +15,27 @@ COPY drizzle.config.ts ./
 COPY tsconfig.json ./
 
 # Build the application for Linux
-RUN bun build --compile --minify-whitespace --minify-syntax --outfile build/server src/main.ts
+RUN bun build --compile --minify-whitespace --minify-syntax --outfile build/server src/cli.ts
 
 # Final stage - ultra-minimal runtime
 FROM frolvlad/alpine-glibc
+
+WORKDIR /app
 
 # Install only essential C++ runtime libraries (minimal overhead)
 RUN apk --no-cache add libstdc++ libgcc
 
 RUN addgroup -S appgroup && adduser -S appuser -G appgroup
 
-# Copy the compiled binary directly from builder stage
-COPY --from=builder /app/build/server /server
+# Binary + migration SQL. One image runs both `serve` and `migrate`;
+# migrate reads the SQL from MIGRATIONS_DIR (this WORKDIR).
+COPY --from=builder /app/build/server ./server
+COPY --from=builder /app/src/db/migrations ./src/db/migrations
 
-RUN chmod +x /server && chown appuser:appgroup /server
+RUN chmod +x ./server && chown -R appuser:appgroup /app
 
 USER appuser
 
 EXPOSE 3000
 
-CMD ["/server"]
+CMD ["/app/server", "serve"]
