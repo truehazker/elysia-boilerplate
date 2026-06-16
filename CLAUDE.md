@@ -41,15 +41,16 @@ docker-compose down            # Stop all services
 
 ### Request Flow
 
-1. Root Elysia app is composed in `src/app.ts`; `src/main.ts` boots it
-   (migrations, `listen`, graceful shutdown)
+1. Root Elysia app is composed in `src/app.ts`; the `serve` command
+   (`src/commands/serve.ts`), dispatched from the CLI entrypoint
+   `src/cli.ts`, boots it (`listen`, graceful shutdown)
 2. Global middleware applied: telemetry, CORS, error handling, OpenAPI
 3. Routed to module in `src/modules/` (e.g., `/users` -> `src/modules/users/`)
 4. Module structure: `index.ts` (routes) -> `service.ts` (business logic) -> database
 
 ### Logger Architecture (CRITICAL)
 
-The logger is initialized **once** in `src/main.ts`. To avoid duplicate logs:
+The logger is initialized **once** in `src/common/logger`. To avoid duplicate logs:
 
 - **DO NOT** use logger from Elysia context (`ctx.log`) in submodules
 - **ALWAYS** import logger directly: `import { log } from 'src/common/logger'`
@@ -126,8 +127,8 @@ After schema changes, run `bun run db:generate` to create migration.
 - Available config: `NODE_ENV`, `LOG_LEVEL`, `SERVER_HOSTNAME`,
   `SERVER_PORT`, `DATABASE_DSN`, `DB_POOL_MAX`,
   `DB_POOL_CONNECTION_TIMEOUT`, `DB_POOL_IDLE_TIMEOUT`,
-  `DB_AUTO_MIGRATE`, `ENABLE_OPENAPI`, `OTEL_ENABLED`,
-  `OTEL_SERVICE_NAME`
+  `DB_AUTO_MIGRATE`, `MIGRATIONS_DIR`, `ENABLE_OPENAPI`,
+  `OTEL_ENABLED`, `OTEL_SERVICE_NAME`
 - `.env.test` ships in the repo with placeholder values. Bun
   auto-loads it whenever `NODE_ENV=test` (which `bun test` sets
   automatically), so unit tests don't need any externally-provided
@@ -150,15 +151,38 @@ Global error handler in `src/middleware/error-handler.ts`
 - Responses use `application/health+json` content type per IETF draft
 - Status values follow RFC: `pass`, `fail`, `warn`
 
-### Bootstrap Process
+### CLI / Entrypoints
 
-`src/main.ts` bootstrap function:
+`src/cli.ts` is the single entrypoint and the `bun build --compile` target.
+It uses Commander to dispatch one of two subcommands from one binary:
 
-1. Run database migrations (if `DB_AUTO_MIGRATE=true`)
+- `serve` (`src/commands/serve.ts`) — the long-lived HTTP server. This is
+  where the `/health` and `/ready` endpoints live; they run continuously
+  alongside the server.
+- `migrate` (`src/commands/migrate.ts`) — a **one-shot** process that applies
+  pending migrations via the programmatic `migrateDb()`, closes the DB pool,
+  and lets the event loop drain so it **exits on its own** (no
+  `process.exit()`, which would truncate pino's worker-thread transport).
+  Failure is signalled via `process.exitCode = 1`.
+
+Command modules are lazily imported with literal specifiers so `migrate`
+never loads the Elysia/route graph (and so `--compile` bundles them).
+
+The same compiled image runs both commands (`server serve` / `server
+migrate`) — there is no separate migration image. In Docker/Compose the
+`migrate` service runs to completion before the app starts.
+
+### `serve` Bootstrap Process
+
+The `serve` command (`src/commands/serve.ts`):
+
+1. Run database migrations (if `DB_AUTO_MIGRATE=true` — **local-dev only**;
+   `migrate()` takes no advisory lock, so this is unsafe across replicas —
+   use the `migrate` command in deployments)
 2. Start HTTP server
 3. Register graceful shutdown handlers (SIGINT, SIGTERM)
 
-If bootstrap fails, app logs fatal error and exits with code 1.
+If bootstrap fails, the CLI logs a fatal error and exits with code 1.
 
 ### Telemetry
 

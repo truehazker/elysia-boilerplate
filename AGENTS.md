@@ -78,6 +78,7 @@ It follows a modular architecture with strict TypeScript configuration.
 - `src/common`: Shared configuration and utilities.
 - `src/db`: Database setup, migrations, and schemas.
 - `src/modules`: Business logic modules.
-- `src/main.ts`: Application entry point.
+- `src/cli.ts`: CLI entrypoint; dispatches the `serve` / `migrate` subcommands.
+- `src/commands`: Command implementations (`serve.ts`, `migrate.ts`).
 - `tests/unit`, `tests/int`, `tests/e2e`: Test tiers (see Testing Instructions).
 

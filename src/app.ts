@@ -10,8 +10,9 @@ import { users } from './modules/users';
 
 /**
  * The root Elysia application — all middleware and modules wired together.
- * Kept separate from `main.ts` (which owns bootstrap/listen) so tests can
- * boot the real app via `app.handle()` without starting an HTTP server.
+ * Kept separate from the command modules (`commands/serve.ts` owns
+ * bootstrap/listen) so tests can boot the real app via `app.handle()`
+ * without starting an HTTP server.
  */
 export const app = new Elysia()
   .use(telemetry)

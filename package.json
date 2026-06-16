@@ -11,11 +11,11 @@
   "homepage": "https://github.com/truehazker/elysia-boilerplate",
   "bugs": "https://github.com/truehazker/elysia-boilerplate/issues",
   "scripts": {
-    "start": "bun run src/main.ts",
-    "dev": "bun run --watch src/main.ts",
-    "build": "bun build --compile --minify-whitespace --minify-syntax --outfile build/server src/main.ts",
+    "start": "bun run src/cli.ts serve",
+    "dev": "bun run --watch src/cli.ts serve",
+    "build": "bun build --compile --minify-whitespace --minify-syntax --outfile build/server src/cli.ts",
     "db:generate": "bun run --bun drizzle-kit generate",
-    "db:migrate": "bun run --bun drizzle-kit migrate",
+    "db:migrate": "bun run src/cli.ts migrate",
     "db:studio": "bun run --bun drizzle-kit studio",
     "lint": "biome check .",
     "lint:fix": "biome check . --write",
@@ -26,7 +26,7 @@
     "test:int": "bun test --preload ./tests/support/setup.ts ./tests/int",
     "test:e2e": "bun test --preload ./tests/support/setup.ts ./tests/e2e"
   },
-  "main": "src/main.ts",
+  "main": "src/cli.ts",
   "dependencies": {
     "@elysia/cors": "^1.4.2",
     "@elysia/openapi": "^1.4.15",
@@ -34,6 +34,7 @@
     "@opentelemetry/exporter-trace-otlp-proto": "0.200.0",
     "@opentelemetry/resources": "2.0.0",
     "@opentelemetry/sdk-trace-node": "2.0.0",
+    "commander": "^15.0.0",
     "drizzle-orm": "^0.45.2",
     "drizzle-typebox": "^0.3.3",
     "elysia": "^1.4.28",

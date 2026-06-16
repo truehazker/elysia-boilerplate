@@ -37,6 +37,9 @@ const config = cleanEnv(Bun.env, {
    * - If migrations fail, the server will NOT start.
    */
   DB_AUTO_MIGRATE: bool({ default: false }),
+  // Drizzle migration files; relative to CWD. The Docker image ships this
+  // folder so the default resolves against its WORKDIR.
+  MIGRATIONS_DIR: str({ default: 'src/db/migrations' }),
 
   // Enable OpenAPI documentation to be available on /openapi route
   ENABLE_OPENAPI: bool({ default: true }),
