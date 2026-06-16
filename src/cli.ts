@@ -40,7 +40,7 @@ if (import.meta.main) {
       // Lazy import keeps `--help`/`--version` env-free.
       const { log } = await import('./common/logger');
       log.fatal({ err: error }, 'Command failed');
-      process.exit(1);
+      process.exitCode = 1;
     });
 }
 

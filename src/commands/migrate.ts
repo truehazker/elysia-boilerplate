@@ -16,6 +16,11 @@ export async function migrate(): Promise<void> {
   } finally {
     // Close the pool (open sockets keep the loop alive); bounded so a dead
     // DB can't stall the deploy.
-    await db.$client.close({ timeout: 5 });
+    try {
+      await db.$client.close({ timeout: 5 });
+    } catch (err) {
+      log.error({ err }, 'Failed to close the database pool');
+      process.exitCode = 1;
+    }
   }
 }
