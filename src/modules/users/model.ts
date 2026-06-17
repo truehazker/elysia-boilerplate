@@ -27,13 +27,18 @@ export namespace UsersModel {
       maximum: 100,
       examples: [100],
     }),
-    offset: t.Number({ default: 0, minimum: 0, examples: [0] }),
+    cursor: t.Optional(
+      t.String({
+        format: 'uuid',
+        description: 'Opaque cursor from a prior page',
+      }),
+    ),
   });
   export type getQuery = typeof getQuery.static;
 
   export const getResponse = t.Object({
     users: t.Array(t.Omit(userSelect, ['createdAt', 'updatedAt'])),
-    total: t.Number(),
+    nextCursor: t.Union([t.String(), t.Null()]),
   });
   export type getResponse = typeof getResponse.static;
 }
