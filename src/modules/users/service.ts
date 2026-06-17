@@ -20,7 +20,9 @@ export abstract class UsersService {
   static async get(
     params: UsersModel.getQuery,
   ): Promise<UsersModel.getResponse> {
-    const res = await db
+    // Over-fetch one row to tell "full page, more to come" from "full page, last one"
+    // without a second count query — the extra row is the proof a next page exists.
+    const rows = await db
       .select({
         id: users.id,
         name: users.name,
@@ -30,12 +32,13 @@ export abstract class UsersService {
       .from(users)
       .where(params.cursor ? gt(users.id, params.cursor) : undefined)
       .orderBy(asc(users.id))
-      .limit(params.limit);
+      .limit(params.limit + 1);
 
-    const last = res.length === params.limit ? res.at(-1) : undefined;
+    const hasNext = rows.length > params.limit;
+    const res = hasNext ? rows.slice(0, params.limit) : rows;
     return {
       users: res,
-      nextCursor: last?.id ?? null,
+      nextCursor: hasNext ? (res.at(-1)?.id ?? null) : null,
     };
   }
 }

@@ -28,7 +28,10 @@ export namespace UsersModel {
       examples: [100],
     }),
     cursor: t.Optional(
-      t.String({ description: 'Opaque cursor from a prior page' }),
+      t.String({
+        format: 'uuid',
+        description: 'Opaque cursor from a prior page',
+      }),
     ),
   });
   export type getQuery = typeof getQuery.static;

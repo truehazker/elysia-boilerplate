@@ -116,6 +116,28 @@ describe('UsersService (integration)', () => {
       expect(new Set(seen).size).toBe(7);
     });
 
+    it('terminates with a null cursor when rows divide evenly by the limit', async () => {
+      // Regression: a full final page must not hand back a cursor to an empty page.
+      for (let i = 0; i < 4; i++) {
+        await UsersService.create({
+          name: `User${i}`,
+          surname: 'Test',
+          email: `user${i}@example.com`,
+        });
+      }
+
+      const first = await UsersService.get({ limit: 2 });
+      expect(first.users).toHaveLength(2);
+      expect(first.nextCursor).toBeString();
+
+      const second = await UsersService.get({
+        limit: 2,
+        cursor: first.nextCursor ?? undefined,
+      });
+      expect(second.users).toHaveLength(2);
+      expect(second.nextCursor).toBeNull(); // exact boundary: no phantom next page
+    });
+
     it('returns empty list when no users exist', async () => {
       const page = await UsersService.get({ limit: 100 });
       expect(page.users).toEqual([]);
