@@ -1,11 +1,13 @@
 import { Elysia, status } from 'elysia';
 import { log as logger } from 'src/common/logger';
+import { rateLimiter } from 'src/middleware/rate-limit';
 import { type UsersModel, usersModelPlugin } from './model';
 import { UsersService } from './service';
 
 const log = logger.child({ name: 'users' });
 
 export const users = new Elysia({ prefix: '/users', tags: ['Users'] })
+  .use(rateLimiter)
   .use(usersModelPlugin)
   .post(
     '/',
