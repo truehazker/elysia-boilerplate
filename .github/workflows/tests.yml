@@ -11,24 +11,9 @@ on:
       - develop
 
 jobs:
-  test:
-    name: Run Tests
+  unit:
+    name: Unit Tests
     runs-on: ubuntu-latest
-    services:
-      postgres:
-        image: postgres:17-alpine
-        env:
-          POSTGRES_USER: postgres
-          POSTGRES_PASSWORD: postgres
-          POSTGRES_DB: test
-        ports:
-          - 5432:5432
-        options: >-
-          --health-cmd="pg_isready -U postgres -d test"
-          --health-interval=10s
-          --health-timeout=5s
-          --health-retries=5
-
     steps:
       - name: Checkout code
         uses: actions/checkout@v4
@@ -41,13 +26,51 @@ jobs:
       - name: Install dependencies
         run: bun install --frozen-lockfile
 
-      - name: Prepare environment variables
-        run: |
-          echo "NODE_ENV=test" >> $GITHUB_ENV
-          echo "DATABASE_URL=postgresql://postgres:postgres@localhost:5432/test" >> $GITHUB_ENV
-
-      - name: Run tests
+      - name: Run unit tests
+        # Bun auto-sets NODE_ENV=test, which auto-loads `.env.test` from the
+        # repo. That file provides a placeholder DATABASE_DSN so envalid is
+        # satisfied without needing a real database.
         run: bun test
 
       - name: Build
         run: bun run build
+
+  integration:
+    name: Integration Tests
+    runs-on: ubuntu-latest
+    # ubuntu-latest runners have Docker pre-installed; Testcontainers boots
+    # its own Postgres on demand, so no `services:` block is needed.
+    steps:
+      - name: Checkout code
+        uses: actions/checkout@v4
+
+      - name: Setup Bun
+        uses: oven-sh/setup-bun@v2
+        with:
+          bun-version: 1.3.11
+
+      - name: Install dependencies
+        run: bun install --frozen-lockfile
+
+      - name: Run integration tests
+        run: bun run test:int
+
+  e2e:
+    name: E2E Tests
+    runs-on: ubuntu-latest
+    # ubuntu-latest runners have Docker pre-installed; Testcontainers boots
+    # its own Postgres on demand, so no `services:` block is needed.
+    steps:
+      - name: Checkout code
+        uses: actions/checkout@v4
+
+      - name: Setup Bun
+        uses: oven-sh/setup-bun@v2
+        with:
+          bun-version: 1.3.11
+
+      - name: Install dependencies
+        run: bun install --frozen-lockfile
+
+      - name: Run e2e tests
+        run: bun run test:e2e

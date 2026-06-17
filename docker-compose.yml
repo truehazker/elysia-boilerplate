@@ -10,7 +10,7 @@ services:
       LOG_LEVEL: info
       SERVER_HOSTNAME: 0.0.0.0
       SERVER_PORT: 3000
-      DATABASE_URL: postgresql://postgres:postgres@elysia-boilerplate-postgres:5432/elysia-boilerplate
+      DATABASE_DSN: ${DATABASE_DSN:-postgresql://postgres:postgres@elysia-boilerplate-postgres:5432/elysia-boilerplate}
       ENABLE_OPENAPI: "false"
     depends_on:
       elysia-boilerplate-migrate:
@@ -20,9 +20,14 @@ services:
   elysia-boilerplate-migrate:
     build:
       context: .
-      dockerfile: Dockerfile.migrate
+      dockerfile: Dockerfile
+    # Same image as the app — run the one-shot migration command and exit.
+    command: ["/app/server", "migrate"]
     environment:
-      DATABASE_URL: postgresql://postgres:postgres@elysia-boilerplate-postgres:5432/elysia-boilerplate
+      NODE_ENV: production
+      LOG_LEVEL: info
+      DATABASE_DSN: ${DATABASE_DSN:-postgresql://postgres:postgres@elysia-boilerplate-postgres:5432/elysia-boilerplate}
+    restart: "no"
     depends_on:
       elysia-boilerplate-postgres:
         condition: service_healthy

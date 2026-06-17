@@ -1,6 +1,7 @@
+import type { App } from 'src/app';
 import { log as logger } from 'src/common/logger';
 import db from 'src/db';
-import type { App } from 'src/main';
+import { shutdownTelemetry } from 'src/middleware/telemetry';
 
 const log = logger.child({ name: 'graceful-shutdown' });
 
@@ -24,14 +25,17 @@ export async function gracefulShutdown(
     process.exit(1);
   }, 10000); // 10 second timeout
 
+  let exitCode = 0;
   try {
     await app.stop();
-    await db.$client.end();
-    clearTimeout(shutdownTimeout);
-    process.exit(0);
+    await db.$client.close();
   } catch (error) {
-    clearTimeout(shutdownTimeout);
+    exitCode = 1;
     log.error(error, `Error during ${signal} shutdown`);
-    process.exit(1);
+  } finally {
+    // Always flush traces, even on the failure path — those spans matter most.
+    await shutdownTelemetry();
+    clearTimeout(shutdownTimeout);
+    process.exit(exitCode);
   }
 }
