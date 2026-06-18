@@ -3,8 +3,11 @@ import { Elysia } from 'elysia';
 import { rateLimiter } from 'src/middleware/rate-limit';
 
 const req = (path: string) => new Request(`http://localhost${path}`);
-const remaining = (res: Response) =>
-  Number(res.headers.get('RateLimit-Remaining'));
+const remaining = (res: Response) => {
+  const header = res.headers.get('RateLimit-Remaining');
+  // Absent header -> NaN, not Number(null) === 0, so presence checks hold.
+  return header === null ? Number.NaN : Number(header);
+};
 
 // `app.handle` has no bound server, so the default IP generator warns on every
 // request. Silence the test-only noise.
