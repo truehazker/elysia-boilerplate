@@ -1,7 +1,6 @@
 import cors from '@elysia/cors';
 import openapi from '@elysia/openapi';
 import { Elysia } from 'elysia';
-import { rateLimit } from 'elysia-rate-limit';
 import packageJson from '../package.json';
 import config from './common/config';
 import { errorHandler } from './middleware/error-handler';
@@ -22,12 +21,6 @@ export const app = new Elysia({
   .use(telemetry)
   .use(requestId)
   .use(cors())
-  .use(
-    rateLimit({
-      max: config.RATE_LIMIT_MAX,
-      duration: config.RATE_LIMIT_WINDOW * 1000,
-    }),
-  )
   .use(errorHandler)
   .use(
     openapi({
