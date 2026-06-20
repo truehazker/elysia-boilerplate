@@ -7,6 +7,19 @@ and this project adheres to [Semantic Versioning](https://semver.org/spec/v2.0.0
 
 ## [Unreleased]
 
+## [0.7.0] - 2026-06-20
+
+### Changed
+
+- ♻️ Scoped the rate limiter to API handlers instead of mounting it globally on the root app. It now lives in `src/middleware/rate-limit.ts` as an opt-in, per-module limiter (`scoping: 'scoped'`) applied via `.use(rateLimiter)` — currently on the `users` module. Behavior for `/users` is unchanged (same `RATE_LIMIT_MAX` / `RATE_LIMIT_WINDOW`, per-IP)
+- ♻️ `/health` and `/ready` liveness/readiness probes are **no longer rate-limited**, so monitoring traffic and real clients can't starve each other's shared request budget. In-app limiting is now per-handler defense-in-depth only; the real global RPS cap is delegated to the edge (e.g. Cloudflare)
+
+### Migration notes
+
+- No config changes required. If you relied on the root app rate-limiting every route (including health probes), add `.use(rateLimiter)` to the modules that need it — see `src/modules/users/index.ts`.
+
+## [0.6.0] - 2026-05-06
+
 ### Added
 
 - ✨ Tier-based test layout (`tests/unit`, `tests/int`, `tests/e2e`) — each tier runnable in isolation with its own preload/env/timeout
@@ -21,15 +34,6 @@ and this project adheres to [Semantic Versioning](https://semver.org/spec/v2.0.0
 - ♻️ `bunfig.toml` `[test].root = "tests/unit"` so default `bun test` runs only the unit tier
 - ♻️ New scripts: `test:unit` (alias of `test`), `test:int` (preloads testcontainer setup against `./tests/int`), and `test:e2e` (same preload against `./tests/e2e`)
 - ♻️ Extracted the Elysia app into `src/app.ts` (`main.ts` now only bootstraps/listens) so tests can boot the real app without starting a server
-
-### Migration notes
-
-- Existing deployments need no change — all new env vars default to the previous hardcoded values.
-
-## [0.6.0] - 2026-05-06
-
-### Changed
-
 - ⬆️ **BREAKING:** Migrated official Elysia plugins from `@elysiajs/*` to `@elysia/*` scope (`cors`, `openapi`)
 - ⬆️ **BREAKING:** Swapped database driver from `pg` (node-postgres) to `Bun.sql` via `drizzle-orm/bun-sql` — drops `pg` and `@types/pg`, uses Bun's native PostgreSQL client
 - ⬆️ **BREAKING:** Renamed `DATABASE_URL` env var to `DATABASE_DSN` (it's a connection DSN, not a URL endpoint) — update `.env`, deploy configs, and CI secrets accordingly
@@ -46,6 +50,7 @@ and this project adheres to [Semantic Versioning](https://semver.org/spec/v2.0.0
 
 ### Migration notes
 
+- Existing deployments need no change — all new `DB_POOL_*` env vars default to the previous hardcoded values.
 - If you set custom pg pool options via env or fork, port them to `Bun.SQL` equivalents (seconds, not ms).
 - For per-statement timeout, append `?options=-c%20statement_timeout%3D5000` to `DATABASE_DSN`.
 - Compiled binaries (`bun build --compile`) must run with `NODE_ENV=production` to bypass the pino-pretty worker thread (worker dynamic-require is unsupported in compiled mode).
