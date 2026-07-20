@@ -7,6 +7,16 @@ and this project adheres to [Semantic Versioning](https://semver.org/spec/v2.0.0
 
 ## [Unreleased]
 
+## [0.8.0] - 2026-07-20
+
+### Added
+
+- ✨ Pino now emits the log `level` as a text label (`"info"`) instead of the numeric default (`30`) via `formatters.level`, so Loki/Grafana pipelines can filter and colour by severity without a number→word mapping step
+
+### Changed
+
+- 🔧 `SERVER_HOSTNAME` now defaults to `0.0.0.0` (was `localhost`) so the server listens on all interfaces out of the box — container and Compose deployments work without an env override. The advertised OpenAPI docs URL maps `0.0.0.0` back to `localhost` so it stays clickable in local dev
+
 ## [0.7.0] - 2026-06-20
 
 ### Changed
