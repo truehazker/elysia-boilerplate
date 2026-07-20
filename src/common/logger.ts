@@ -34,6 +34,7 @@ const usePretty = isDev && Boolean(process.stdout.isTTY);
 export const log = pino({
   level: config.LOG_LEVEL,
   mixin: correlationBindings,
+  formatters: { level: (label) => ({ level: label }) },
   redact: [
     'password',
     '*.password',

@@ -32,7 +32,8 @@ export const app = new Elysia({
         },
         servers: [
           {
-            url: `http://${config.SERVER_HOSTNAME}:${config.SERVER_PORT}`,
+            // 0.0.0.0 is a bind address, not a reachable URL — show localhost.
+            url: `http://${config.SERVER_HOSTNAME === '0.0.0.0' ? 'localhost' : config.SERVER_HOSTNAME}:${config.SERVER_PORT}`,
             description: 'Local development server',
           },
         ],
