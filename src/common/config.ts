@@ -19,7 +19,7 @@ const config = cleanEnv(Bun.env, {
     choices: ['info', 'debug', 'warn', 'error', 'fatal', 'trace', 'silent'],
     default: 'debug',
   }),
-  SERVER_HOSTNAME: str({ default: 'localhost' }),
+  SERVER_HOSTNAME: str({ default: '0.0.0.0' }),
   SERVER_PORT: port({ default: 3000 }),
   DATABASE_DSN: url(),
   /**
